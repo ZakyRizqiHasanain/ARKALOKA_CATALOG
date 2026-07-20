@@ -36,11 +36,9 @@ function Login(){
 
             if(response.ok){
 
-                // simpan token
-                localStorage.setItem(
-                    "token",
-                    data.token
-                );
+                // ✅ FIX: simpan token DAN data admin (role wajib ada untuk ProtectedRoute)
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("admin", JSON.stringify(data.admin));
 
                 // redirect dashboard
                 navigate("/admin");
