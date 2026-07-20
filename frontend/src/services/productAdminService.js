@@ -1,103 +1,114 @@
-import API_URL from "./api";
+import apiClient from "../utils/apiClient";
 
-// 1. Get all products for admin management (maps backend fields to frontend format)
-export async function getAdminProducts() {
-    const token = localStorage.getItem("token");
-    const response = await fetch(`${API_URL}/products?admin=true&limit=100`, {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    });
+// ── Kolom DB aktual (dari schema inspection): ──────────────────────────────
+//   id, kategori_id, nama_produk, harga, deskripsi, gambar, status, created_at
+// ── Service ini memetakan nama field DB ke nama frontend: ──────────────────
+//   nama_produk  → name
+//   harga        → price
+//   deskripsi    → description
+//   gambar       → image
+//   kategori_id  → category_id
+// ──────────────────────────────────────────────────────────────────────────
 
-    const data = await response.json();
-    if (!response.ok) {
-        throw new Error(data.message || "Gagal mengambil produk");
-    }
-    
-    // Map database fields (nama_produk, harga, deskripsi) back to frontend convention (name, price, description)
-    return (data.products || []).map(product => ({
-        id: product.id,
-        name: product.nama_produk,
-        price: parseFloat(product.harga),
-        description: product.deskripsi,
-        gambar: product.gambar,
-        status: product.status,
-        category: product.category,
-        category_id: product.kategori_id
-    }));
+/** Peta dari DB columns ke frontend fields */
+function mapProductFromDB(row) {
+    return {
+        id: row.id,
+        name: row.nama_produk,
+        price: parseFloat(row.harga),
+        description: row.deskripsi || "",
+        image: row.gambar || "",
+        status: row.status || "active",
+        category_id: row.kategori_id,
+        category: row.category || row.nama_kategori || "",
+        category_slug: row.category_slug || "",
+        stock: row.stock ?? 0,
+        created_at: row.created_at,
+    };
 }
 
-// 2. Create a new product (Admin only) (maps frontend form convention to backend format)
-export async function createProduct(productData) {
-    const token = localStorage.getItem("token");
-    
-    const backendData = {
-        nama_produk: productData.name,
-        kategori_id: parseInt(productData.category_id, 10),
-        harga: parseFloat(productData.price),
-        deskripsi: productData.description,
-        gambar: productData.gambar || "",
-        status: productData.status || "active"
+/** Peta dari frontend fields ke DB columns (untuk INSERT/UPDATE) */
+function mapProductToDB(formData) {
+    return {
+        nama_produk: formData.name,
+        kategori_id: parseInt(formData.category_id, 10),
+        harga: parseFloat(formData.price),
+        deskripsi: formData.description || "",
+        gambar: formData.image || "",
+        status: formData.status || "active",
+        // stock hanya dikirim jika ada (opsional — bergantung apakah kolom sudah di-migrate)
+        ...(formData.stock !== undefined && formData.stock !== ""
+            ? { stock: parseInt(formData.stock, 10) }
+            : {}),
     };
+}
 
-    const response = await fetch(`${API_URL}/products`, {
+// 1. Ambil semua produk (admin view — includes inactive)
+export async function getAdminProducts({ q = "", category = "", sort = "", page = 1, limit = 8 } = {}) {
+    const params = new URLSearchParams({ admin: "true", limit, page });
+    if (q) params.append("q", q);
+    if (category) params.append("category", category);
+    if (sort) params.append("sort", sort);
+
+    const response = await apiClient(`/products?${params.toString()}`);
+    const data = await response.json();
+
+    if (!response.ok) throw new Error(data.message || "Gagal mengambil produk");
+
+    return {
+        products: (data.products || []).map(mapProductFromDB),
+        pagination: data.pagination || { totalProducts: 0, totalPages: 1, currentPage: 1, limit: 8 },
+    };
+}
+
+// 2. Tambah produk baru
+export async function createProduct(formData) {
+    const body = mapProductToDB(formData);
+
+    const response = await apiClient("/products", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(backendData)
+        body: JSON.stringify(body),
     });
 
     const data = await response.json();
-    if (!response.ok) {
-        throw new Error(data.message || "Gagal menambahkan produk");
-    }
+    if (!response.ok) throw new Error(data.message || "Gagal menambahkan produk");
     return data;
 }
 
-// 3. Update an existing product (Admin only) (maps frontend form convention to backend format)
-export async function updateProduct(id, productData) {
-    const token = localStorage.getItem("token");
-    
-    const backendData = {
-        nama_produk: productData.name,
-        kategori_id: parseInt(productData.category_id, 10),
-        harga: parseFloat(productData.price),
-        deskripsi: productData.description,
-        gambar: productData.gambar || "",
-        status: productData.status || "active"
-    };
+// 3. Update produk
+export async function updateProduct(id, formData) {
+    const body = mapProductToDB(formData);
 
-    const response = await fetch(`${API_URL}/products/${id}`, {
+    const response = await apiClient(`/products/${id}`, {
         method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(backendData)
+        body: JSON.stringify(body),
     });
 
     const data = await response.json();
-    if (!response.ok) {
-        throw new Error(data.message || "Gagal mengupdate produk");
-    }
+    if (!response.ok) throw new Error(data.message || "Gagal mengupdate produk");
     return data;
 }
 
-// 4. Delete a product (Admin only)
+// 4. Hapus produk
 export async function deleteProduct(id) {
-    const token = localStorage.getItem("token");
-    const response = await fetch(`${API_URL}/products/${id}`, {
-        method: "DELETE",
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
+    const response = await apiClient(`/products/${id}`, { method: "DELETE" });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || "Gagal menghapus produk");
+    return data;
+}
+
+// 5. Upload gambar ke server
+export async function uploadProductImage(file) {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const response = await apiClient("/upload/image", {
+        method: "POST",
+        body: formData, // apiClient otomatis hapus Content-Type untuk FormData
+        headers: {}, // override default JSON header
     });
 
     const data = await response.json();
-    if (!response.ok) {
-        throw new Error(data.message || "Gagal menghapus produk");
-    }
-    return data;
+    if (!response.ok) throw new Error(data.message || "Gagal upload gambar");
+    return data; // { message, filename, url }
 }

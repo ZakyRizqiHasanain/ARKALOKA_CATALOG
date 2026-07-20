@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const pool = require("./config/database");
 const errorHandler = require("./middleware/errorMiddleware");
 
@@ -7,6 +8,7 @@ const authRoutes = require("./routes/authRoutes");
 const productRoutes = require("./routes/productRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const uploadRoutes = require("./routes/uploadRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,21 +16,35 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(
     cors({
-        origin: "http://localhost:5173"
+        // Izinkan Vite dev server (port 5173 dan 5174 sebagai cadangan)
+        origin: ["http://localhost:5173", "http://localhost:5174"],
+        credentials: true,
     })
 );
 app.use(express.json());
+
+// Static files — serve folder uploads/ agar gambar bisa diakses via URL
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/upload", uploadRoutes);
 
 // Base route
 app.get("/", (req, res) => {
     res.json({
-        message: "Product Store API Running"
+        message: "Product Store API Running",
+        endpoints: {
+            auth: "/api/auth",
+            products: "/api/products",
+            categories: "/api/categories",
+            admin: "/api/admin",
+            upload: "/api/upload",
+            uploads_static: "/uploads/:filename",
+        },
     });
 });
 
@@ -41,6 +57,7 @@ pool.connect()
         console.log("Database connected successfully");
         app.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);
+            console.log(`Uploads accessible at: http://localhost:${PORT}/uploads/`);
         });
     })
     .catch((err) => {
