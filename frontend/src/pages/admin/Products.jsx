@@ -9,26 +9,24 @@ import {
 } from "../../services/productAdminService";
 import { getCategories } from "../../services/categoryService";
 
-// ── Helpers ────────────────────────────────────────────────────────────────
 const formatRupiah = (n) =>
     new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(n);
 
 const formatDate = (d) =>
     d ? new Date(d).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }) : "—";
 
-// ── Modal Wrapper ──────────────────────────────────────────────────────────
 function Modal({ title, subtitle, onClose, children }) {
     return (
-        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 backdrop-blur-sm p-4 overflow-y-auto">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl my-8">
-                <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/70 backdrop-blur-md p-4 overflow-y-auto">
+            <div className="bg-[#21150F] border border-[#3D281C] text-[#F5E9DC] rounded-3xl shadow-2xl w-full max-w-2xl my-8">
+                <div className="flex items-center justify-between px-6 py-5 border-b border-[#3D281C]">
                     <div>
-                        <h2 className="font-bold text-gray-900 text-lg">{title}</h2>
-                        {subtitle && <p className="text-xs text-gray-400 mt-0.5">{subtitle}</p>}
+                        <h2 className="font-bold text-[#F5E9DC] text-lg">{title}</h2>
+                        {subtitle && <p className="text-xs text-[#B8A08C] mt-0.5">{subtitle}</p>}
                     </div>
                     <button
                         onClick={onClose}
-                        className="text-gray-400 hover:text-gray-600 text-xl w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors"
+                        className="text-[#B8A08C] hover:text-[#F5E9DC] text-xl w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[#2C1D16] transition-colors"
                     >
                         ✕
                     </button>
@@ -39,20 +37,18 @@ function Modal({ title, subtitle, onClose, children }) {
     );
 }
 
-// ── Skeleton Row ──────────────────────────────────────────────────────────
 function SkeletonRow() {
     return (
         <tr className="animate-pulse">
             {[...Array(7)].map((_, i) => (
                 <td key={i} className="px-4 py-4">
-                    <div className="h-4 bg-gray-100 rounded w-3/4" />
+                    <div className="h-4 bg-[#2C1D16] rounded w-3/4" />
                 </td>
             ))}
         </tr>
     );
 }
 
-// ── Main Page ─────────────────────────────────────────────────────────────
 function AdminProductsPage() {
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -61,7 +57,6 @@ function AdminProductsPage() {
     const [formLoading, setFormLoading] = useState(false);
     const [error, setError] = useState("");
 
-    // Filter & search states
     const [search, setSearch] = useState("");
     const [searchInput, setSearchInput] = useState("");
     const [categoryFilter, setCategoryFilter] = useState("");
@@ -69,19 +64,16 @@ function AdminProductsPage() {
     const [page, setPage] = useState(1);
     const LIMIT = 8;
 
-    // Modal states
     const [showAddModal, setShowAddModal] = useState(false);
-    const [editProduct, setEditProduct] = useState(null); // product object atau null
-    const [deleteTarget, setDeleteTarget] = useState(null); // { id, name }
-    const [toast, setToast] = useState(null); // { type: "success"|"error", message }
+    const [editProduct, setEditProduct] = useState(null);
+    const [deleteTarget, setDeleteTarget] = useState(null);
+    const [toast, setToast] = useState(null);
 
-    // ── Toast helper ──────────────────────────────────────────────────────
     const showToast = (type, message) => {
         setToast({ type, message });
         setTimeout(() => setToast(null), 3000);
     };
 
-    // ── Fetch products ─────────────────────────────────────────────────────
     const loadProducts = useCallback(async () => {
         setLoading(true);
         setError("");
@@ -104,23 +96,19 @@ function AdminProductsPage() {
 
     useEffect(() => { loadProducts(); }, [loadProducts]);
 
-    // Fetch categories untuk filter dropdown
     useEffect(() => {
         getCategories()
             .then(setCategories)
             .catch(() => {});
     }, []);
 
-    // Reset ke page 1 jika filter berubah
     useEffect(() => { setPage(1); }, [search, categoryFilter, sort]);
 
-    // ── Search submit ──────────────────────────────────────────────────────
     const handleSearchSubmit = (e) => {
         e.preventDefault();
         setSearch(searchInput);
     };
 
-    // ── Add product ────────────────────────────────────────────────────────
     const handleAdd = async (formData) => {
         setFormLoading(true);
         try {
@@ -135,7 +123,6 @@ function AdminProductsPage() {
         }
     };
 
-    // ── Edit product ───────────────────────────────────────────────────────
     const handleEdit = async (formData) => {
         if (!editProduct) return;
         setFormLoading(true);
@@ -151,7 +138,6 @@ function AdminProductsPage() {
         }
     };
 
-    // ── Delete product ─────────────────────────────────────────────────────
     const handleDeleteConfirm = async () => {
         if (!deleteTarget) return;
         setFormLoading(true);
@@ -167,65 +153,61 @@ function AdminProductsPage() {
         }
     };
 
-    // ── Render ────────────────────────────────────────────────────────────
     return (
         <AdminLayout>
-            <div className="space-y-6">
+            <div className="space-y-6 text-[#F5E9DC]">
 
-                {/* ── Toast Notification ────────────────────────────────── */}
                 {toast && (
                     <div
-                        className={`fixed top-6 right-6 z-50 px-5 py-3 rounded-xl shadow-lg text-sm font-semibold transition-all duration-300 ${
+                        className={`fixed top-6 right-6 z-50 px-5 py-3 rounded-xl shadow-xl text-sm font-semibold transition-all duration-300 ${
                             toast.type === "success"
-                                ? "bg-emerald-600 text-white"
-                                : "bg-red-600 text-white"
+                                ? "bg-emerald-800 text-white border border-emerald-600"
+                                : "bg-red-800 text-white border border-red-600"
                         }`}
                     >
                         {toast.type === "success" ? "✅" : "❌"} {toast.message}
                     </div>
                 )}
 
-                {/* ── Page Header ───────────────────────────────────────── */}
+                {/* Page Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
-                        <h1 className="text-2xl font-black text-gray-900">Manajemen Produk</h1>
-                        <p className="text-sm text-gray-500 mt-0.5">
+                        <h1 className="text-2xl font-black text-[#F5E9DC]">Manajemen Produk</h1>
+                        <p className="text-sm text-[#B8A08C] mt-0.5">
                             {pagination.totalProducts} produk terdaftar
                         </p>
                     </div>
                     <button
                         onClick={() => { setEditProduct(null); setShowAddModal(true); }}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm rounded-xl shadow-sm transition-colors"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#B87333] hover:bg-[#A05E22] text-[#F5E9DC] font-semibold text-sm rounded-xl shadow-md transition-colors"
                     >
                         <span className="text-base">+</span> Tambah Produk
                     </button>
                 </div>
 
-                {/* ── Search & Filter Bar ───────────────────────────────── */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                {/* Search & Filter Bar */}
+                <div className="bg-[#21150F] rounded-2xl border border-[#3D281C] shadow-md p-4">
                     <div className="flex flex-col sm:flex-row gap-3">
-                        {/* Search */}
                         <form onSubmit={handleSearchSubmit} className="flex flex-1 gap-2">
                             <input
                                 type="text"
                                 value={searchInput}
                                 onChange={(e) => setSearchInput(e.target.value)}
                                 placeholder="Cari nama produk..."
-                                className="flex-1 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                className="flex-1 border border-[#3D281C] bg-[#140D09] text-[#F5E9DC] placeholder-[#B8A08C]/50 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#B87333]"
                             />
                             <button
                                 type="submit"
-                                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl transition-colors"
+                                className="px-4 py-2 bg-[#B87333] hover:bg-[#A05E22] text-[#F5E9DC] text-sm font-semibold rounded-xl transition-colors"
                             >
                                 Cari
                             </button>
                         </form>
 
-                        {/* Filter Kategori */}
                         <select
                             value={categoryFilter}
                             onChange={(e) => setCategoryFilter(e.target.value)}
-                            className="border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                            className="border border-[#3D281C] rounded-xl px-4 py-2 text-sm bg-[#140D09] text-[#F5E9DC] focus:outline-none focus:ring-2 focus:ring-[#B87333]"
                         >
                             <option value="">Semua Kategori</option>
                             {categories.map((c) => (
@@ -235,22 +217,20 @@ function AdminProductsPage() {
                             ))}
                         </select>
 
-                        {/* Sort Harga */}
                         <select
                             value={sort}
                             onChange={(e) => setSort(e.target.value)}
-                            className="border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                            className="border border-[#3D281C] rounded-xl px-4 py-2 text-sm bg-[#140D09] text-[#F5E9DC] focus:outline-none focus:ring-2 focus:ring-[#B87333]"
                         >
                             <option value="">Terbaru</option>
                             <option value="asc">Harga: Terendah</option>
                             <option value="desc">Harga: Tertinggi</option>
                         </select>
 
-                        {/* Reset */}
                         {(search || categoryFilter || sort) && (
                             <button
                                 onClick={() => { setSearch(""); setSearchInput(""); setCategoryFilter(""); setSort(""); }}
-                                className="px-4 py-2 text-sm text-gray-500 hover:text-gray-800 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+                                className="px-4 py-2 text-sm text-[#B8A08C] hover:text-[#F5E9DC] border border-[#3D281C] bg-[#140D09] rounded-xl hover:bg-[#2C1D16] transition-colors"
                             >
                                 Reset
                             </button>
@@ -258,19 +238,18 @@ function AdminProductsPage() {
                     </div>
                 </div>
 
-                {/* ── Error Banner ──────────────────────────────────────── */}
                 {error && (
-                    <div className="bg-red-50 border border-red-100 text-red-600 rounded-xl px-5 py-3 text-sm">
+                    <div className="bg-red-950/40 border border-red-800/50 text-red-300 rounded-xl px-5 py-3 text-sm">
                         ⚠️ {error}
                     </div>
                 )}
 
-                {/* ── Products Table ────────────────────────────────────── */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                {/* Products Table */}
+                <div className="bg-[#21150F] rounded-2xl border border-[#3D281C] shadow-md overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm">
                             <thead>
-                                <tr className="bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                <tr className="bg-[#140D09] border-b border-[#3D281C] text-xs font-semibold text-[#B8A08C] uppercase tracking-wider">
                                     <th className="px-4 py-3 text-left w-10">ID</th>
                                     <th className="px-4 py-3 text-left">Produk</th>
                                     <th className="px-4 py-3 text-left">Kategori</th>
@@ -280,14 +259,14 @@ function AdminProductsPage() {
                                     <th className="px-4 py-3 text-center">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-50">
+                            <tbody className="divide-y divide-[#3D281C]">
                                 {loading ? (
                                     [...Array(LIMIT)].map((_, i) => <SkeletonRow key={i} />)
                                 ) : products.length === 0 ? (
                                     <tr>
                                         <td colSpan={7} className="px-4 py-16 text-center">
                                             <span className="text-4xl block mb-3">📦</span>
-                                            <p className="text-gray-500 font-medium">
+                                            <p className="text-[#B8A08C] font-medium">
                                                 {search || categoryFilter
                                                     ? "Produk tidak ditemukan. Coba filter lain."
                                                     : "Belum ada produk. Tambahkan produk pertama!"}
@@ -298,34 +277,32 @@ function AdminProductsPage() {
                                     products.map((product) => (
                                         <tr
                                             key={product.id}
-                                            className="hover:bg-gray-50 transition-colors duration-100"
+                                            className="hover:bg-[#2C1D16] transition-colors duration-100"
                                         >
-                                            {/* ID */}
-                                            <td className="px-4 py-3 text-gray-400 text-xs font-mono">
+                                            <td className="px-4 py-3 text-[#B8A08C] text-xs font-mono">
                                                 #{product.id}
                                             </td>
 
-                                            {/* Produk (gambar + nama) */}
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-3">
                                                     {product.image ? (
                                                         <img
                                                             src={product.image}
                                                             alt={product.name}
-                                                            className="w-10 h-10 object-cover rounded-lg border border-gray-100 flex-shrink-0"
+                                                            className="w-10 h-10 object-cover rounded-lg border border-[#3D281C] flex-shrink-0"
                                                             onError={(e) => { e.target.style.display = "none"; }}
                                                         />
                                                     ) : (
-                                                        <div className="w-10 h-10 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center text-gray-300 text-lg">
+                                                        <div className="w-10 h-10 bg-[#140D09] border border-[#3D281C] rounded-lg flex-shrink-0 flex items-center justify-center text-[#B8A08C] text-lg">
                                                             🖼
                                                         </div>
                                                     )}
                                                     <div>
-                                                        <p className="font-semibold text-gray-800 line-clamp-1">
+                                                        <p className="font-semibold text-[#F5E9DC] line-clamp-1">
                                                             {product.name}
                                                         </p>
                                                         {product.description && (
-                                                            <p className="text-xs text-gray-400 line-clamp-1 mt-0.5">
+                                                            <p className="text-xs text-[#B8A08C] line-clamp-1 mt-0.5">
                                                                 {product.description}
                                                             </p>
                                                         )}
@@ -333,48 +310,43 @@ function AdminProductsPage() {
                                                 </div>
                                             </td>
 
-                                            {/* Kategori */}
                                             <td className="px-4 py-3">
-                                                <span className="inline-block bg-indigo-50 text-indigo-700 text-xs font-semibold px-2 py-1 rounded-md">
+                                                <span className="inline-block bg-[#140D09] border border-[#3D281C] text-[#D19A6A] text-xs font-semibold px-2 py-1 rounded-md">
                                                     {product.category || "—"}
                                                 </span>
                                             </td>
 
-                                            {/* Harga */}
-                                            <td className="px-4 py-3 font-semibold text-gray-800">
+                                            <td className="px-4 py-3 font-semibold text-[#D19A6A]">
                                                 {formatRupiah(product.price)}
                                             </td>
 
-                                            {/* Status */}
                                             <td className="px-4 py-3 text-center">
                                                 <span
                                                     className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${
                                                         product.status === "active"
-                                                            ? "bg-emerald-100 text-emerald-700"
-                                                            : "bg-red-100 text-red-600"
+                                                            ? "bg-emerald-950/80 border border-emerald-800 text-emerald-300"
+                                                            : "bg-red-950/80 border border-red-800 text-red-300"
                                                     }`}
                                                 >
                                                     {product.status === "active" ? "Aktif" : "Non-aktif"}
                                                 </span>
                                             </td>
 
-                                            {/* Tanggal */}
-                                            <td className="px-4 py-3 text-gray-500 text-xs">
+                                            <td className="px-4 py-3 text-[#B8A08C] text-xs">
                                                 {formatDate(product.created_at)}
                                             </td>
 
-                                            {/* Actions */}
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center justify-center gap-1.5">
                                                     <button
                                                         onClick={() => { setShowAddModal(false); setEditProduct(product); }}
-                                                        className="px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+                                                        className="px-3 py-1.5 text-xs font-semibold text-[#D19A6A] bg-[#140D09] border border-[#3D281C] hover:bg-[#2C1D16] rounded-lg transition-colors"
                                                     >
                                                         Edit
                                                     </button>
                                                     <button
                                                         onClick={() => setDeleteTarget({ id: product.id, name: product.name })}
-                                                        className="px-3 py-1.5 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                                                        className="px-3 py-1.5 text-xs font-semibold text-red-400 bg-red-950/40 border border-red-800/40 hover:bg-red-900/60 rounded-lg transition-colors"
                                                     >
                                                         Hapus
                                                     </button>
@@ -387,10 +359,10 @@ function AdminProductsPage() {
                         </table>
                     </div>
 
-                    {/* ── Pagination ───────────────────────────────────── */}
+                    {/* Pagination */}
                     {pagination.totalPages > 1 && (
-                        <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
-                            <p className="text-xs text-gray-400">
+                        <div className="px-6 py-4 border-t border-[#3D281C] flex items-center justify-between">
+                            <p className="text-xs text-[#B8A08C]">
                                 Menampilkan {((page - 1) * LIMIT) + 1}–{Math.min(page * LIMIT, pagination.totalProducts)} dari{" "}
                                 {pagination.totalProducts} produk
                             </p>
@@ -398,13 +370,12 @@ function AdminProductsPage() {
                                 <button
                                     onClick={() => setPage((p) => Math.max(p - 1, 1))}
                                     disabled={page === 1}
-                                    className="px-3 py-1.5 text-xs font-semibold border border-gray-200 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors"
+                                    className="px-3 py-1.5 text-xs font-semibold border border-[#3D281C] bg-[#140D09] text-[#B8A08C] hover:text-[#F5E9DC] hover:bg-[#2C1D16] disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors"
                                 >
                                     ← Prev
                                 </button>
                                 {[...Array(pagination.totalPages)].map((_, i) => {
                                     const p = i + 1;
-                                    // Tampilkan max 5 halaman di sekitar current
                                     if (
                                         p === 1 ||
                                         p === pagination.totalPages ||
@@ -416,8 +387,8 @@ function AdminProductsPage() {
                                                 onClick={() => setPage(p)}
                                                 className={`w-8 h-8 text-xs font-semibold rounded-lg transition-colors ${
                                                     page === p
-                                                        ? "bg-indigo-600 text-white shadow-sm"
-                                                        : "border border-gray-200 bg-white hover:bg-gray-50 text-gray-600"
+                                                        ? "bg-[#B87333] text-[#F5E9DC] shadow-sm"
+                                                        : "border border-[#3D281C] bg-[#140D09] text-[#B8A08C] hover:bg-[#2C1D16] hover:text-[#F5E9DC]"
                                                 }`}
                                             >
                                                 {p}
@@ -425,14 +396,14 @@ function AdminProductsPage() {
                                         );
                                     }
                                     if (p === page - 2 || p === page + 2) {
-                                        return <span key={p} className="text-gray-400 text-xs px-1">…</span>;
+                                        return <span key={p} className="text-[#B8A08C] text-xs px-1">…</span>;
                                     }
                                     return null;
                                 })}
                                 <button
                                     onClick={() => setPage((p) => Math.min(p + 1, pagination.totalPages))}
                                     disabled={page === pagination.totalPages}
-                                    className="px-3 py-1.5 text-xs font-semibold border border-gray-200 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors"
+                                    className="px-3 py-1.5 text-xs font-semibold border border-[#3D281C] bg-[#140D09] text-[#B8A08C] hover:text-[#F5E9DC] hover:bg-[#2C1D16] disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors"
                                 >
                                     Next →
                                 </button>
@@ -443,9 +414,13 @@ function AdminProductsPage() {
 
             </div>
 
-            {/* ── Modal: Add Product ─────────────────────────────────────── */}
+            {/* Modals */}
             {showAddModal && (
-                <Modal title="Tambah Produk Baru" onClose={() => setShowAddModal(false)}>
+                <Modal
+                    title="Tambah Produk Baru"
+                    subtitle="Isi formulir di bawah ini untuk menambahkan produk ke katalog ARKALOKA"
+                    onClose={() => setShowAddModal(false)}
+                >
                     <ProductForm
                         onSubmit={handleAdd}
                         onCancel={() => setShowAddModal(false)}
@@ -454,11 +429,10 @@ function AdminProductsPage() {
                 </Modal>
             )}
 
-            {/* ── Modal: Edit Product ────────────────────────────────────── */}
             {editProduct && (
                 <Modal
-                    title="Edit Produk"
-                    subtitle={`ID: #${editProduct.id} — ${editProduct.name}`}
+                    title={`Edit Produk — #${editProduct.id}`}
+                    subtitle={`Mengubah data "${editProduct.name}"`}
                     onClose={() => setEditProduct(null)}
                 >
                     <ProductForm
@@ -470,29 +444,27 @@ function AdminProductsPage() {
                 </Modal>
             )}
 
-            {/* ── Modal: Delete Confirmation ─────────────────────────────── */}
             {deleteTarget && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-8 text-center space-y-4">
-                        <span className="text-5xl">🗑️</span>
-                        <h3 className="font-bold text-gray-900 text-lg">Hapus Produk?</h3>
-                        <p className="text-gray-500 text-sm">
-                            Apakah Anda yakin ingin menghapus produk{" "}
-                            <span className="font-semibold text-gray-800">"{deleteTarget.name}"</span>?
-                            Tindakan ini tidak dapat dibatalkan.
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4">
+                    <div className="bg-[#21150F] border border-[#3D281C] text-[#F5E9DC] rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center space-y-4">
+                        <span className="text-4xl block">🗑️</span>
+                        <h3 className="font-bold text-[#F5E9DC] text-lg">Hapus Produk?</h3>
+                        <p className="text-xs text-[#B8A08C]">
+                            Apakah Anda yakin ingin menghapus{" "}
+                            <span className="font-semibold text-[#F5E9DC]">"{deleteTarget.name}"</span>? Action ini tidak dapat dibatalkan.
                         </p>
                         <div className="flex gap-3 pt-2">
                             <button
                                 onClick={() => setDeleteTarget(null)}
                                 disabled={formLoading}
-                                className="flex-1 py-2.5 border border-gray-200 text-gray-700 font-semibold text-sm rounded-xl hover:bg-gray-50 transition-colors"
+                                className="flex-1 py-2.5 bg-[#140D09] border border-[#3D281C] text-[#B8A08C] hover:text-[#F5E9DC] font-semibold text-sm rounded-xl transition-colors"
                             >
                                 Batal
                             </button>
                             <button
                                 onClick={handleDeleteConfirm}
                                 disabled={formLoading}
-                                className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold text-sm rounded-xl transition-colors disabled:opacity-50"
+                                className="flex-1 py-2.5 bg-red-800 hover:bg-red-700 disabled:opacity-50 text-white font-semibold text-sm rounded-xl transition-colors"
                             >
                                 {formLoading ? "Menghapus..." : "Ya, Hapus"}
                             </button>

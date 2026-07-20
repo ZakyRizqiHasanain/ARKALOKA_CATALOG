@@ -8,16 +8,16 @@ function CategoryCard({ category }) {
     return (
         <Link
             to={`/categories/${category.slug}`}
-            className="group relative flex flex-col h-44 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100"
+            className="group relative flex flex-col h-44 rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-[#3D281C] bg-[#21150F]"
         >
             {/* Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-slate-900/20 to-transparent group-hover:from-slate-900/80 transition-colors duration-300 z-10" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#140D09] via-[#140D09]/50 to-transparent group-hover:from-[#140D09]/90 transition-colors duration-300 z-10" />
 
             {/* Background image */}
             <img
                 src={imageUrl}
                 alt={category.nama_kategori}
-                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 group-hover:opacity-100"
                 loading="lazy"
                 onError={(e) => {
                     e.target.style.display = "none";
@@ -25,11 +25,11 @@ function CategoryCard({ category }) {
             />
 
             {/* Text overlay */}
-            <div className="relative z-20 flex flex-col justify-end h-full p-4 text-white">
-                <h3 className="font-bold text-base leading-tight tracking-wide group-hover:translate-x-1 transition-transform duration-300">
+            <div className="relative z-20 flex flex-col justify-end h-full p-4 text-[#F5E9DC]">
+                <h3 className="font-bold text-base leading-tight tracking-wide group-hover:text-[#D19A6A] group-hover:translate-x-1 transition-all duration-300">
                     {category.nama_kategori}
                 </h3>
-                <span className="text-xs text-indigo-200 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <span className="text-xs text-[#D19A6A] mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-semibold">
                     Lihat Produk →
                 </span>
             </div>

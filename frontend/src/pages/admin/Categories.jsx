@@ -7,245 +7,181 @@ import {
     deleteCategory,
 } from "../../services/categoryService";
 
-// ── Auto-generate slug dari nama ──────────────────────────────────────────
-function toSlug(text) {
-    return text
-        .toLowerCase()
-        .replace(/\s+/g, "-")
-        .replace(/[^a-z0-9-]/g, "")
-        .replace(/-+/g, "-")
-        .replace(/^-|-$/g, "");
-}
-
-// ── Toast Notification ────────────────────────────────────────────────────
-function Toast({ toast }) {
-    if (!toast) return null;
+function Modal({ title, subtitle, onClose, children }) {
     return (
-        <div
-            className={`fixed top-6 right-6 z-50 px-5 py-3 rounded-xl shadow-lg text-sm font-semibold transition-all duration-300 ${
-                toast.type === "success" ? "bg-emerald-600 text-white" : "bg-red-600 text-white"
-            }`}
-        >
-            {toast.type === "success" ? "✅" : "❌"} {toast.message}
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/70 backdrop-blur-md p-4 overflow-y-auto">
+            <div className="bg-[#21150F] border border-[#3D281C] text-[#F5E9DC] rounded-3xl shadow-2xl w-full max-w-lg my-8">
+                <div className="flex items-center justify-between px-6 py-5 border-b border-[#3D281C]">
+                    <div>
+                        <h2 className="font-bold text-[#F5E9DC] text-lg">{title}</h2>
+                        {subtitle && <p className="text-xs text-[#B8A08C] mt-0.5">{subtitle}</p>}
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="text-[#B8A08C] hover:text-[#F5E9DC] text-xl w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[#2C1D16] transition-colors"
+                    >
+                        ✕
+                    </button>
+                </div>
+                <div className="px-6 py-6">{children}</div>
+            </div>
         </div>
     );
 }
 
-// ── Category Form Modal ───────────────────────────────────────────────────
-function CategoryModal({ initial, onSubmit, onClose, isLoading }) {
-    const isEdit = !!initial;
-
+function CategoryFormModal({ initialData, onSubmit, onCancel, isLoading }) {
+    const isEdit = !!initialData;
     const [form, setForm] = useState({
-        nama_kategori: initial?.nama_kategori || "",
-        slug: initial?.slug || "",
-        gambar: initial?.gambar || "",
+        nama_kategori: initialData?.nama_kategori || "",
+        slug: initialData?.slug || "",
+        gambar: initialData?.gambar || "",
     });
     const [errors, setErrors] = useState({});
-    const [slugManual, setSlugManual] = useState(isEdit); // edit mode: slug tidak auto-generate
+
+    const autoSlug = (name) =>
+        name
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9\s-]/g, "")
+            .replace(/\s+/g, "-");
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setForm((prev) => {
             const next = { ...prev, [name]: value };
-            // Auto-generate slug dari nama (hanya jika bukan mode manual / edit)
-            if (name === "nama_kategori" && !slugManual) {
-                next.slug = toSlug(value);
+            if (name === "nama_kategori" && !isEdit) {
+                next.slug = autoSlug(value);
             }
             return next;
         });
         if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
     };
 
-    const handleSlugChange = (e) => {
-        setSlugManual(true);
-        setForm((prev) => ({ ...prev, slug: e.target.value }));
-        if (errors.slug) setErrors((prev) => ({ ...prev, slug: "" }));
-    };
-
     const validate = () => {
-        const e = {};
-        if (!form.nama_kategori.trim()) e.nama_kategori = "Nama kategori wajib diisi.";
-        if (!form.slug.trim()) e.slug = "Slug wajib diisi.";
-        else if (!/^[a-z0-9-]+$/.test(form.slug.trim()))
-            e.slug = "Slug hanya boleh huruf kecil, angka, dan tanda hubung (-).";
-        return e;
+        const errs = {};
+        if (!form.nama_kategori.trim()) errs.nama_kategori = "Nama kategori wajib diisi.";
+        return errs;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const errs = validate();
-        if (Object.keys(errs).length) { setErrors(errs); return; }
-        await onSubmit({ ...form, slug: form.slug.trim(), nama_kategori: form.nama_kategori.trim() });
+        if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+        await onSubmit(form);
     };
 
     const inputCls = (field) =>
-        `w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all ${
-            errors[field] ? "border-red-400 bg-red-50" : "border-gray-200"
+        `w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#B87333] transition-all bg-[#140D09] text-[#F5E9DC] placeholder-[#B8A08C]/50 ${
+            errors[field] ? "border-red-500 bg-red-950/20" : "border-[#3D281C]"
         }`;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
-                {/* Header */}
-                <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
-                    <div>
-                        <h2 className="font-bold text-gray-900 text-lg">
-                            {isEdit ? "Edit Kategori" : "Tambah Kategori Baru"}
-                        </h2>
-                        {isEdit && (
-                            <p className="text-xs text-gray-400 mt-0.5">ID: #{initial.id}</p>
-                        )}
+        <form onSubmit={handleSubmit} className="space-y-4 text-[#F5E9DC]">
+            <div>
+                <label className="block text-sm font-semibold text-[#B8A08C] mb-1">
+                    Nama Kategori <span className="text-red-400">*</span>
+                </label>
+                <input
+                    type="text"
+                    name="nama_kategori"
+                    value={form.nama_kategori}
+                    onChange={handleChange}
+                    placeholder="Contoh: Pakaian Pria"
+                    className={inputCls("nama_kategori")}
+                />
+                {errors.nama_kategori && (
+                    <p className="text-red-400 text-xs mt-1">{errors.nama_kategori}</p>
+                )}
+            </div>
+
+            <div>
+                <label className="block text-sm font-semibold text-[#B8A08C] mb-1">Slug</label>
+                <input
+                    type="text"
+                    name="slug"
+                    value={form.slug}
+                    onChange={handleChange}
+                    placeholder="pakaian-pria"
+                    className={inputCls("slug")}
+                />
+                <p className="text-xs text-[#B8A08C] mt-1">
+                    Digunakan untuk URL (otomatis terisi dari nama).
+                </p>
+            </div>
+
+            <div>
+                <label className="block text-sm font-semibold text-[#B8A08C] mb-1">URL Gambar</label>
+                <input
+                    type="url"
+                    name="gambar"
+                    value={form.gambar}
+                    onChange={handleChange}
+                    placeholder="https://example.com/kategori.jpg"
+                    className={inputCls("gambar")}
+                />
+            </div>
+
+            {form.gambar && (
+                <div>
+                    <label className="block text-xs font-semibold text-[#B8A08C] mb-1">Preview Gambar</label>
+                    <div className="h-28 rounded-xl overflow-hidden bg-[#140D09] border border-[#3D281C]">
+                        <img
+                            src={form.gambar}
+                            alt="Preview"
+                            className="w-full h-full object-cover"
+                            onError={(e) => { e.target.style.display = "none"; }}
+                        />
                     </div>
-                    <button
-                        onClick={onClose}
-                        className="text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors"
-                    >
-                        ✕
-                    </button>
                 </div>
+            )}
 
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="px-6 py-6 space-y-4">
-
-                    {/* Nama Kategori */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Nama Kategori <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            name="nama_kategori"
-                            value={form.nama_kategori}
-                            onChange={handleChange}
-                            placeholder="Contoh: Elektronik"
-                            className={inputCls("nama_kategori")}
-                            autoFocus
-                        />
-                        {errors.nama_kategori && (
-                            <p className="text-red-500 text-xs mt-1">{errors.nama_kategori}</p>
-                        )}
-                    </div>
-
-                    {/* Slug */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Slug <span className="text-red-500">*</span>
-                            {!isEdit && (
-                                <span className="ml-2 text-xs text-gray-400 font-normal">
-                                    (auto-generated dari nama)
-                                </span>
-                            )}
-                        </label>
-                        <input
-                            type="text"
-                            name="slug"
-                            value={form.slug}
-                            onChange={handleSlugChange}
-                            placeholder="contoh: elektronik"
-                            className={inputCls("slug")}
-                        />
-                        {errors.slug && (
-                            <p className="text-red-500 text-xs mt-1">{errors.slug}</p>
-                        )}
-                        <p className="text-xs text-gray-400 mt-1">
-                            Digunakan sebagai URL: <code className="bg-gray-100 px-1 rounded">/category/{form.slug || "..."}</code>
-                        </p>
-                    </div>
-
-                    {/* Gambar URL */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            URL Gambar
-                            <span className="ml-2 text-xs text-gray-400 font-normal">(opsional)</span>
-                        </label>
-                        <input
-                            type="url"
-                            name="gambar"
-                            value={form.gambar}
-                            onChange={handleChange}
-                            placeholder="https://example.com/image.jpg"
-                            className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        />
-                        {/* Preview gambar */}
-                        {form.gambar && (
-                            <div className="mt-2 w-full h-28 rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
-                                <img
-                                    src={form.gambar}
-                                    alt="Preview"
-                                    className="w-full h-full object-cover"
-                                    onError={(e) => { e.target.style.display = "none"; }}
-                                />
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Buttons */}
-                    <div className="flex gap-3 pt-2">
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-semibold text-sm rounded-xl transition-colors"
-                        >
-                            {isLoading ? "Menyimpan..." : isEdit ? "Simpan Perubahan" : "Tambah Kategori"}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            disabled={isLoading}
-                            className="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm rounded-xl transition-colors"
-                        >
-                            Batal
-                        </button>
-                    </div>
-                </form>
+            <div className="flex gap-3 pt-2">
+                <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="flex-1 py-2.5 bg-[#B87333] hover:bg-[#A05E22] disabled:opacity-50 text-[#F5E9DC] font-semibold text-sm rounded-xl transition-colors"
+                >
+                    {isLoading ? "Menyimpan..." : isEdit ? "Simpan Perubahan" : "Tambah Kategori"}
+                </button>
+                <button
+                    type="button"
+                    onClick={onCancel}
+                    disabled={isLoading}
+                    className="py-2.5 px-5 bg-[#140D09] border border-[#3D281C] text-[#B8A08C] hover:text-[#F5E9DC] font-semibold text-sm rounded-xl transition-colors"
+                >
+                    Batal
+                </button>
             </div>
-        </div>
+        </form>
     );
 }
-
-// ── Skeleton Card ─────────────────────────────────────────────────────────
-function SkeletonCard() {
-    return (
-        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden animate-pulse">
-            <div className="h-36 bg-gray-100" />
-            <div className="p-4 space-y-2">
-                <div className="h-4 bg-gray-100 rounded w-3/4" />
-                <div className="h-3 bg-gray-100 rounded w-1/2" />
-            </div>
-        </div>
-    );
-}
-
-// ── Main Page ─────────────────────────────────────────────────────────────
-const LIMIT = 8;
 
 function AdminCategoriesPage() {
-    const [allCategories, setAllCategories] = useState([]);   // semua data (filter client-side)
+    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [formLoading, setFormLoading] = useState(false);
     const [error, setError] = useState("");
 
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
+    const LIMIT = 8;
 
     const [showAddModal, setShowAddModal] = useState(false);
     const [editCategory, setEditCategory] = useState(null);
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [toast, setToast] = useState(null);
 
-    // ── Toast helper ──────────────────────────────────────────────────────
     const showToast = (type, message) => {
         setToast({ type, message });
         setTimeout(() => setToast(null), 3000);
     };
 
-    // ── Fetch all categories ──────────────────────────────────────────────
     const loadCategories = useCallback(async () => {
         setLoading(true);
         setError("");
         try {
             const data = await getCategories();
-            setAllCategories(data);
+            setCategories(data);
         } catch (err) {
             setError(err.message || "Gagal memuat kategori.");
         } finally {
@@ -255,18 +191,17 @@ function AdminCategoriesPage() {
 
     useEffect(() => { loadCategories(); }, [loadCategories]);
 
-    // Reset page saat search berubah
     useEffect(() => { setPage(1); }, [search]);
 
-    // ── Client-side filter & pagination ──────────────────────────────────
-    const filtered = allCategories.filter((c) =>
-        c.nama_kategori.toLowerCase().includes(search.toLowerCase()) ||
-        c.slug.toLowerCase().includes(search.toLowerCase())
+    const filtered = categories.filter(
+        (c) =>
+            c.nama_kategori.toLowerCase().includes(search.toLowerCase()) ||
+            c.slug.toLowerCase().includes(search.toLowerCase())
     );
-    const totalPages = Math.max(1, Math.ceil(filtered.length / LIMIT));
+
+    const totalPages = Math.ceil(filtered.length / LIMIT) || 1;
     const paginated = filtered.slice((page - 1) * LIMIT, page * LIMIT);
 
-    // ── Add ───────────────────────────────────────────────────────────────
     const handleAdd = async (formData) => {
         setFormLoading(true);
         try {
@@ -281,7 +216,6 @@ function AdminCategoriesPage() {
         }
     };
 
-    // ── Edit ──────────────────────────────────────────────────────────────
     const handleEdit = async (formData) => {
         if (!editCategory) return;
         setFormLoading(true);
@@ -297,7 +231,6 @@ function AdminCategoriesPage() {
         }
     };
 
-    // ── Delete ────────────────────────────────────────────────────────────
     const handleDeleteConfirm = async () => {
         if (!deleteTarget) return;
         setFormLoading(true);
@@ -313,86 +246,79 @@ function AdminCategoriesPage() {
         }
     };
 
-    // ── Render ────────────────────────────────────────────────────────────
     return (
         <AdminLayout>
-            <div className="space-y-6">
-                <Toast toast={toast} />
+            <div className="space-y-6 text-[#F5E9DC]">
 
-                {/* ── Page Header ───────────────────────────────────────── */}
+                {toast && (
+                    <div
+                        className={`fixed top-6 right-6 z-50 px-5 py-3 rounded-xl shadow-xl text-sm font-semibold transition-all duration-300 ${
+                            toast.type === "success"
+                                ? "bg-emerald-800 text-white border border-emerald-600"
+                                : "bg-red-800 text-white border border-red-600"
+                        }`}
+                    >
+                        {toast.type === "success" ? "✅" : "❌"} {toast.message}
+                    </div>
+                )}
+
+                {/* Page Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
-                        <h1 className="text-2xl font-black text-gray-900">Manajemen Kategori</h1>
-                        <p className="text-sm text-gray-500 mt-0.5">
-                            {allCategories.length} kategori terdaftar
+                        <h1 className="text-2xl font-black text-[#F5E9DC]">Manajemen Kategori</h1>
+                        <p className="text-sm text-[#B8A08C] mt-0.5">
+                            {categories.length} kategori terdaftar
                         </p>
                     </div>
                     <button
                         onClick={() => { setEditCategory(null); setShowAddModal(true); }}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm rounded-xl shadow-sm transition-colors"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#B87333] hover:bg-[#A05E22] text-[#F5E9DC] font-semibold text-sm rounded-xl shadow-md transition-colors"
                     >
                         <span className="text-base">+</span> Tambah Kategori
                     </button>
                 </div>
 
-                {/* ── Search Bar ────────────────────────────────────────── */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-                    <div className="flex gap-3">
-                        <div className="relative flex-1">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔍</span>
-                            <input
-                                type="text"
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                placeholder="Cari nama atau slug kategori..."
-                                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            />
-                        </div>
-                        {search && (
-                            <button
-                                onClick={() => setSearch("")}
-                                className="px-4 py-2 text-sm text-gray-500 hover:text-gray-800 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
-                            >
-                                Reset
-                            </button>
-                        )}
+                {/* Filter & Search Bar */}
+                <div className="bg-[#21150F] rounded-2xl border border-[#3D281C] p-4 flex flex-col sm:flex-row gap-4 justify-between items-center shadow-md">
+                    <div className="relative w-full sm:w-80">
+                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#B8A08C] text-sm">🔍</span>
+                        <input
+                            type="text"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="Cari nama atau slug kategori..."
+                            className="w-full pl-10 pr-4 py-2.5 border border-[#3D281C] bg-[#140D09] text-[#F5E9DC] placeholder-[#B8A08C]/50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#B87333]"
+                        />
                     </div>
                     {search && (
-                        <p className="text-xs text-gray-400 mt-2 px-1">
-                            Menampilkan {filtered.length} hasil untuk "{search}"
-                        </p>
+                        <button
+                            onClick={() => setSearch("")}
+                            className="text-xs text-[#B8A08C] hover:text-[#F5E9DC] underline"
+                        >
+                            Reset pencarian
+                        </button>
                     )}
                 </div>
 
-                {/* ── Error Banner ──────────────────────────────────────── */}
                 {error && (
-                    <div className="bg-red-50 border border-red-100 text-red-600 rounded-xl px-5 py-3 text-sm flex items-center justify-between">
-                        <span>⚠️ {error}</span>
-                        <button
-                            onClick={loadCategories}
-                            className="text-red-600 underline text-xs font-medium ml-4"
-                        >
-                            Coba Lagi
-                        </button>
+                    <div className="bg-red-950/40 border border-red-800/50 text-red-300 rounded-xl px-5 py-3 text-sm">
+                        ⚠️ {error}
                     </div>
                 )}
 
-                {/* ── Category Grid ─────────────────────────────────────── */}
+                {/* Categories Cards Grid */}
                 {loading ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                        {[...Array(8)].map((_, i) => <SkeletonCard key={i} />)}
+                        {[...Array(6)].map((_, i) => (
+                            <div key={i} className="h-48 bg-[#21150F] border border-[#3D281C] rounded-2xl animate-pulse" />
+                        ))}
                     </div>
                 ) : paginated.length === 0 ? (
-                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-16 text-center">
+                    <div className="bg-[#21150F] rounded-2xl border border-[#3D281C] p-12 text-center shadow-md">
                         <span className="text-4xl block mb-3">🏷️</span>
-                        <p className="font-semibold text-gray-700">
-                            {search ? "Kategori tidak ditemukan." : "Belum ada kategori."}
+                        <p className="text-[#B8A08C] font-medium">
+                            {search ? "Kategori tidak ditemukan." : "Belum ada kategori. Tambahkan sekarang!"}
                         </p>
-                        {!search && (
-                            <p className="text-sm text-gray-400 mt-1">
-                                Klik "Tambah Kategori" untuk membuat kategori pertama.
-                            </p>
-                        )}
                     </div>
                 ) : (
                     <>
@@ -400,49 +326,45 @@ function AdminCategoriesPage() {
                             {paginated.map((cat) => (
                                 <div
                                     key={cat.id}
-                                    className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200 group"
+                                    className="bg-[#21150F] rounded-2xl border border-[#3D281C] shadow-md overflow-hidden hover:border-[#B87333]/50 transition-all duration-200 group flex flex-col justify-between"
                                 >
-                                    {/* Gambar */}
-                                    <div className="h-36 bg-gradient-to-br from-indigo-50 to-violet-50 overflow-hidden">
+                                    <div className="h-36 bg-[#140D09] overflow-hidden relative">
                                         {cat.gambar ? (
                                             <img
                                                 src={cat.gambar}
                                                 alt={cat.nama_kategori}
-                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-90"
                                                 onError={(e) => { e.target.style.display = "none"; }}
                                             />
                                         ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-4xl text-indigo-200">
+                                            <div className="w-full h-full flex items-center justify-center text-4xl text-[#B8A08C]">
                                                 🏷️
                                             </div>
                                         )}
                                     </div>
 
-                                    {/* Info */}
-                                    <div className="p-4">
-                                        <h3 className="font-bold text-gray-900 truncate">
-                                            {cat.nama_kategori}
-                                        </h3>
-                                        <p className="text-xs text-gray-400 mt-0.5 font-mono truncate">
-                                            /{cat.slug}
-                                        </p>
+                                    <div className="p-5 space-y-3 flex-1 flex flex-col justify-between">
+                                        <div>
+                                            <h3 className="font-bold text-[#F5E9DC] text-base line-clamp-1 group-hover:text-[#D19A6A] transition-colors">
+                                                {cat.nama_kategori}
+                                            </h3>
+                                            <p className="text-xs text-[#B8A08C] mt-0.5 font-mono">
+                                                /{cat.slug}
+                                            </p>
+                                        </div>
 
-                                        {/* Actions */}
-                                        <div className="flex gap-2 mt-3">
+                                        <div className="flex gap-2 pt-2 border-t border-[#3D281C]">
                                             <button
-                                                onClick={() => {
-                                                    setShowAddModal(false);
-                                                    setEditCategory(cat);
-                                                }}
-                                                className="flex-1 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+                                                onClick={() => setEditCategory(cat)}
+                                                className="flex-1 py-1.5 text-xs font-semibold text-[#D19A6A] bg-[#140D09] border border-[#3D281C] hover:bg-[#2C1D16] rounded-lg transition-colors"
                                             >
-                                                Edit
+                                                ✏️ Edit
                                             </button>
                                             <button
                                                 onClick={() => setDeleteTarget(cat)}
-                                                className="flex-1 py-1.5 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                                                className="flex-1 py-1.5 text-xs font-semibold text-red-400 bg-red-950/40 border border-red-800/40 hover:bg-red-900/60 rounded-lg transition-colors"
                                             >
-                                                Hapus
+                                                🗑️ Hapus
                                             </button>
                                         </div>
                                     </div>
@@ -450,101 +372,82 @@ function AdminCategoriesPage() {
                             ))}
                         </div>
 
-                        {/* ── Pagination ───────────────────────────────── */}
                         {totalPages > 1 && (
-                            <div className="flex items-center justify-between bg-white rounded-2xl border border-gray-100 shadow-sm px-6 py-4">
-                                <p className="text-xs text-gray-400">
-                                    Halaman {page} dari {totalPages} ({filtered.length} kategori)
-                                </p>
-                                <div className="flex items-center gap-1.5">
-                                    <button
-                                        onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                                        disabled={page === 1}
-                                        className="px-3 py-1.5 text-xs font-semibold border border-gray-200 bg-white hover:bg-gray-50 disabled:opacity-40 rounded-lg transition-colors"
-                                    >
-                                        ← Prev
-                                    </button>
-                                    {[...Array(totalPages)].map((_, i) => {
-                                        const p = i + 1;
-                                        if (p === 1 || p === totalPages || (p >= page - 1 && p <= page + 1)) {
-                                            return (
-                                                <button
-                                                    key={p}
-                                                    onClick={() => setPage(p)}
-                                                    className={`w-8 h-8 text-xs font-semibold rounded-lg transition-colors ${
-                                                        page === p
-                                                            ? "bg-indigo-600 text-white shadow-sm"
-                                                            : "border border-gray-200 bg-white hover:bg-gray-50 text-gray-600"
-                                                    }`}
-                                                >
-                                                    {p}
-                                                </button>
-                                            );
-                                        }
-                                        if (p === page - 2 || p === page + 2) {
-                                            return <span key={p} className="text-gray-400 text-xs px-1">…</span>;
-                                        }
-                                        return null;
-                                    })}
-                                    <button
-                                        onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-                                        disabled={page === totalPages}
-                                        className="px-3 py-1.5 text-xs font-semibold border border-gray-200 bg-white hover:bg-gray-50 disabled:opacity-40 rounded-lg transition-colors"
-                                    >
-                                        Next →
-                                    </button>
-                                </div>
+                            <div className="flex items-center justify-center gap-2 pt-4">
+                                {[...Array(totalPages)].map((_, i) => {
+                                    const p = i + 1;
+                                    return (
+                                        <button
+                                            key={p}
+                                            onClick={() => setPage(p)}
+                                            className={`w-9 h-9 text-sm font-semibold rounded-xl transition-colors ${
+                                                page === p
+                                                    ? "bg-[#B87333] text-[#F5E9DC] shadow-sm"
+                                                    : "border border-[#3D281C] bg-[#140D09] hover:bg-[#2C1D16] text-[#B8A08C] hover:text-[#F5E9DC]"
+                                            }`}
+                                        >
+                                            {p}
+                                        </button>
+                                    );
+                                })}
                             </div>
                         )}
                     </>
                 )}
+
             </div>
 
-            {/* ── Modal: Add Category ────────────────────────────────────── */}
+            {/* Modals */}
             {showAddModal && (
-                <CategoryModal
-                    onSubmit={handleAdd}
+                <Modal
+                    title="Tambah Kategori Baru"
+                    subtitle="Masukkan nama kategori baru"
                     onClose={() => setShowAddModal(false)}
-                    isLoading={formLoading}
-                />
+                >
+                    <CategoryFormModal
+                        onSubmit={handleAdd}
+                        onCancel={() => setShowAddModal(false)}
+                        isLoading={formLoading}
+                    />
+                </Modal>
             )}
 
-            {/* ── Modal: Edit Category ───────────────────────────────────── */}
             {editCategory && (
-                <CategoryModal
-                    initial={editCategory}
-                    onSubmit={handleEdit}
+                <Modal
+                    title={`Edit Kategori — ${editCategory.nama_kategori}`}
+                    subtitle="Ubah detail kategori"
                     onClose={() => setEditCategory(null)}
-                    isLoading={formLoading}
-                />
+                >
+                    <CategoryFormModal
+                        initialData={editCategory}
+                        onSubmit={handleEdit}
+                        onCancel={() => setEditCategory(null)}
+                        isLoading={formLoading}
+                    />
+                </Modal>
             )}
 
-            {/* ── Modal: Delete Confirmation ─────────────────────────────── */}
             {deleteTarget && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-8 text-center space-y-4">
-                        <span className="text-5xl">⚠️</span>
-                        <h3 className="font-bold text-gray-900 text-lg">Hapus Kategori?</h3>
-                        <p className="text-gray-500 text-sm">
-                            Menghapus kategori{" "}
-                            <span className="font-semibold text-gray-800">
-                                "{deleteTarget.nama_kategori}"
-                            </span>{" "}
-                            dapat mempengaruhi produk yang menggunakan kategori ini.
-                            Tindakan ini tidak dapat dibatalkan.
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4">
+                    <div className="bg-[#21150F] border border-[#3D281C] text-[#F5E9DC] rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center space-y-4">
+                        <span className="text-4xl block">🗑️</span>
+                        <h3 className="font-bold text-[#F5E9DC] text-lg">Hapus Kategori?</h3>
+                        <p className="text-xs text-[#B8A08C]">
+                            Apakah Anda yakin ingin menghapus kategori{" "}
+                            <span className="font-semibold text-[#F5E9DC]">"{deleteTarget.nama_kategori}"</span>?
                         </p>
                         <div className="flex gap-3 pt-2">
                             <button
                                 onClick={() => setDeleteTarget(null)}
                                 disabled={formLoading}
-                                className="flex-1 py-2.5 border border-gray-200 text-gray-700 font-semibold text-sm rounded-xl hover:bg-gray-50 transition-colors"
+                                className="flex-1 py-2.5 bg-[#140D09] border border-[#3D281C] text-[#B8A08C] hover:text-[#F5E9DC] font-semibold text-sm rounded-xl transition-colors"
                             >
                                 Batal
                             </button>
                             <button
                                 onClick={handleDeleteConfirm}
                                 disabled={formLoading}
-                                className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold text-sm rounded-xl transition-colors disabled:opacity-50"
+                                className="flex-1 py-2.5 bg-red-800 hover:bg-red-700 disabled:opacity-50 text-white font-semibold text-sm rounded-xl transition-colors"
                             >
                                 {formLoading ? "Menghapus..." : "Ya, Hapus"}
                             </button>

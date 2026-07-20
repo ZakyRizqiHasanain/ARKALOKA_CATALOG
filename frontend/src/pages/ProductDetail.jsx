@@ -23,7 +23,6 @@ function ProductDetail() {
         getProductById(id)
             .then((data) => {
                 setProduct(data);
-                // Fetch produk terkait (same category, exclude current)
                 if (data.category_slug) {
                     getProducts({ category: data.category_slug, limit: 4 })
                         .then((r) => setRelated((r.products || []).filter((p) => p.id !== data.id).slice(0, 4)))
@@ -34,42 +33,34 @@ function ProductDetail() {
             .finally(() => setLoading(false));
     }, [id]);
 
-    // ── Loading State ────────────────────────────────────────────────────
     if (loading) {
         return (
-            <div className="max-w-6xl mx-auto px-6 py-16 min-h-screen animate-pulse bg-slate-50">
-                <div className="flex gap-2 mb-8">
-                    {[...Array(4)].map((_, i) => (
-                        <div key={i} className="h-4 bg-gray-200 rounded w-20" />
-                    ))}
-                </div>
-                <div className="bg-white rounded-3xl p-8 grid md:grid-cols-2 gap-12">
-                    <div className="aspect-square bg-gray-200 rounded-2xl" />
+            <div className="max-w-6xl mx-auto px-6 py-16 min-h-screen animate-pulse bg-[#140D09]">
+                <div className="bg-[#21150F] rounded-3xl p-8 border border-[#3D281C] grid md:grid-cols-2 gap-12">
+                    <div className="aspect-square bg-[#2C1D16] rounded-2xl" />
                     <div className="space-y-4">
-                        <div className="h-6 bg-gray-200 rounded w-1/4" />
-                        <div className="h-10 bg-gray-200 rounded w-3/4" />
-                        <div className="h-8 bg-gray-200 rounded w-1/3" />
-                        <div className="h-3 bg-gray-200 rounded" />
-                        <div className="h-3 bg-gray-200 rounded w-5/6" />
-                        <div className="h-3 bg-gray-200 rounded w-4/6" />
-                        <div className="h-14 bg-gray-200 rounded-2xl w-2/3 mt-6" />
+                        <div className="h-6 bg-[#2C1D16] rounded w-1/4" />
+                        <div className="h-10 bg-[#2C1D16] rounded w-3/4" />
+                        <div className="h-8 bg-[#2C1D16] rounded w-1/3" />
+                        <div className="h-3 bg-[#2C1D16] rounded" />
+                        <div className="h-3 bg-[#2C1D16] rounded w-5/6" />
+                        <div className="h-14 bg-[#2C1D16] rounded-2xl w-2/3 mt-6" />
                     </div>
                 </div>
             </div>
         );
     }
 
-    // ── Error State ──────────────────────────────────────────────────────
     if (error || !product) {
         return (
-            <div className="max-w-3xl mx-auto px-6 py-20 text-center min-h-screen bg-slate-50">
-                <div className="bg-white p-12 rounded-3xl border border-gray-100 shadow-sm space-y-4">
+            <div className="max-w-3xl mx-auto px-6 py-20 text-center min-h-screen bg-[#140D09]">
+                <div className="bg-[#21150F] p-12 rounded-3xl border border-[#3D281C] shadow-lg space-y-4">
                     <span className="text-5xl">⚠️</span>
-                    <h2 className="text-2xl font-bold text-slate-800">Produk Tidak Ditemukan</h2>
-                    <p className="text-red-500 text-sm">{error}</p>
+                    <h2 className="text-2xl font-bold text-[#F5E9DC]">Produk Tidak Ditemukan</h2>
+                    <p className="text-red-400 text-sm">{error}</p>
                     <Link
                         to="/products"
-                        className="inline-block mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-2.5 rounded-xl transition-all duration-200"
+                        className="inline-block mt-4 bg-[#B87333] hover:bg-[#A05E22] text-[#F5E9DC] font-semibold px-6 py-2.5 rounded-xl transition-all duration-200"
                     >
                         Kembali ke Katalog
                     </Link>
@@ -81,7 +72,7 @@ function ProductDetail() {
     const whatsappNumber = "6281234567890";
     const priceStr = formatRupiah(product.harga);
     const whatsappMsg = encodeURIComponent(
-        `Halo, saya tertarik dengan produk:\n\n*Nama:* ${product.nama_produk}\n*Kategori:* ${product.category}\n*Harga:* ${priceStr}\n\nApakah masih tersedia?`
+        `Halo, saya tertarik dengan produk ARKALOKA:\n\n*Nama:* ${product.nama_produk}\n*Kategori:* ${product.category}\n*Harga:* ${priceStr}\n\nApakah masih tersedia?`
     );
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMsg}`;
     const imageUrl = imgError || !product.gambar
@@ -89,15 +80,15 @@ function ProductDetail() {
         : product.gambar;
 
     return (
-        <div className="bg-slate-50 min-h-screen">
+        <div className="bg-[#140D09] min-h-screen text-[#F5E9DC]">
 
             {/* ── Main Detail Card ────────────────────────────────────── */}
             <section className="max-w-6xl mx-auto px-6 py-8">
-                <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+                <div className="bg-[#21150F] rounded-3xl border border-[#3D281C] shadow-2xl overflow-hidden">
                     <div className="grid md:grid-cols-2 gap-0">
 
                         {/* Image Column */}
-                        <div className="relative bg-gray-50 aspect-square overflow-hidden">
+                        <div className="relative bg-[#140D09] aspect-square overflow-hidden">
                             <img
                                 src={imageUrl}
                                 alt={product.nama_produk}
@@ -105,7 +96,7 @@ function ProductDetail() {
                                 onError={() => setImgError(true)}
                             />
                             {product.status === "inactive" && (
-                                <span className="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-full uppercase shadow-lg">
+                                <span className="absolute top-4 right-4 bg-red-900/90 border border-red-700 text-red-200 text-xs font-bold px-3 py-1.5 rounded-full uppercase shadow-lg">
                                     Non-aktif
                                 </span>
                             )}
@@ -118,31 +109,31 @@ function ProductDetail() {
                             <div>
                                 <Link
                                     to={`/categories/${product.category_slug}`}
-                                    className="inline-block text-xs font-bold text-indigo-600 uppercase tracking-widest bg-indigo-50 hover:bg-indigo-100 px-3 py-1 rounded-md transition-colors"
+                                    className="inline-block text-xs font-bold text-[#D19A6A] uppercase tracking-widest bg-[#140D09] border border-[#3D281C] hover:bg-[#2C1D16] px-3.5 py-1.5 rounded-lg transition-colors"
                                 >
                                     {product.category}
                                 </Link>
-                                <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 mt-3 leading-tight">
+                                <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#F5E9DC] mt-3 leading-tight">
                                     {product.nama_produk}
                                 </h1>
                             </div>
 
                             {/* Price */}
-                            <div className="py-4 border-t border-b border-gray-100">
-                                <span className="text-xs text-gray-400 uppercase tracking-wider">Harga</span>
-                                <p className="text-3xl font-black text-indigo-600 mt-1">
+                            <div className="py-4 border-t border-b border-[#3D281C]">
+                                <span className="text-xs text-[#B8A08C] uppercase tracking-wider">Harga</span>
+                                <p className="text-3xl font-black text-[#D19A6A] mt-1">
                                     {priceStr}
                                 </p>
                             </div>
 
                             {/* Status */}
                             <div className="flex items-center gap-2">
-                                <span className="text-sm text-gray-500">Status:</span>
+                                <span className="text-sm text-[#B8A08C]">Status:</span>
                                 <span
                                     className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${
                                         product.status === "active"
-                                            ? "bg-emerald-100 text-emerald-700"
-                                            : "bg-red-100 text-red-600"
+                                            ? "bg-emerald-950/80 border border-emerald-800 text-emerald-300"
+                                            : "bg-red-950/80 border border-red-800 text-red-300"
                                     }`}
                                 >
                                     {product.status === "active" ? "✓ Tersedia" : "✗ Tidak Tersedia"}
@@ -152,10 +143,10 @@ function ProductDetail() {
                             {/* Description */}
                             {product.deskripsi && (
                                 <div>
-                                    <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wider mb-2">
+                                    <h3 className="font-bold text-[#D19A6A] text-xs uppercase tracking-wider mb-2">
                                         Deskripsi Produk
                                     </h3>
-                                    <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">
+                                    <p className="text-[#B8A08C] text-sm leading-relaxed whitespace-pre-line">
                                         {product.deskripsi}
                                     </p>
                                 </div>
@@ -167,14 +158,14 @@ function ProductDetail() {
                                     href={whatsappUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-lg shadow-emerald-100 transition-all duration-300 hover:-translate-y-0.5"
+                                    className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-emerald-700 hover:bg-emerald-600 text-white font-bold rounded-2xl shadow-lg shadow-emerald-950/50 transition-all duration-300 hover:-translate-y-0.5"
                                 >
                                     <span className="text-xl">💬</span>
                                     <span>Hubungi via WhatsApp</span>
                                 </a>
                                 <Link
                                     to="/products"
-                                    className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-gray-200 text-gray-600 font-semibold text-sm rounded-xl hover:bg-gray-50 transition-colors"
+                                    className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-[#3D281C] text-[#B8A08C] hover:text-[#F5E9DC] bg-[#140D09] hover:bg-[#2C1D16] font-semibold text-sm rounded-xl transition-colors"
                                 >
                                     ← Kembali ke Katalog
                                 </Link>
@@ -189,16 +180,16 @@ function ProductDetail() {
                 <section className="max-w-6xl mx-auto px-6 py-10 pb-20">
                     <div className="flex items-end justify-between mb-6">
                         <div>
-                            <span className="text-indigo-600 text-xs font-semibold uppercase tracking-widest">
+                            <span className="text-[#D19A6A] text-xs font-semibold uppercase tracking-widest">
                                 Kategori {product.category}
                             </span>
-                            <h2 className="text-2xl font-extrabold text-slate-900 mt-1">
+                            <h2 className="text-2xl font-extrabold text-[#F5E9DC] mt-1">
                                 Produk Terkait
                             </h2>
                         </div>
                         <Link
                             to={`/categories/${product.category_slug}`}
-                            className="text-sm font-bold text-indigo-600 hover:text-indigo-700 transition-colors"
+                            className="text-sm font-bold text-[#D19A6A] hover:text-[#F5E9DC] transition-colors"
                         >
                             Lihat Semua →
                         </Link>

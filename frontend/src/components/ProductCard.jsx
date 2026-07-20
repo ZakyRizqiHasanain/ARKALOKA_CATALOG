@@ -17,14 +17,14 @@ function ProductCard({ product }) {
     return (
         <Link
             to={`/products/${product.id}`}
-            className="group flex flex-col h-full bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+            className="group flex flex-col h-full bg-[#21150F] rounded-2xl border border-[#3D281C] shadow-md hover:shadow-2xl hover:border-[#B87333]/50 hover:-translate-y-1 transition-all duration-300 overflow-hidden"
         >
             {/* Image */}
-            <div className="relative overflow-hidden aspect-[4/3] bg-gray-50">
+            <div className="relative overflow-hidden aspect-[4/3] bg-[#140D09]">
                 <img
                     src={imageUrl}
                     alt={product.nama_produk}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
                     loading="lazy"
                     onError={(e) => {
                         e.target.src =
@@ -33,13 +33,13 @@ function ProductCard({ product }) {
                 />
 
                 {/* Category badge */}
-                <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-indigo-700 text-xs font-semibold px-2.5 py-1 rounded-md shadow-sm border border-indigo-50">
+                <span className="absolute top-3 left-3 bg-[#140D09]/80 backdrop-blur-md text-[#D19A6A] text-xs font-semibold px-2.5 py-1 rounded-md shadow-sm border border-[#3D281C]">
                     {product.category || "Umum"}
                 </span>
 
                 {/* Status badge (only show if inactive) */}
                 {!isActive && (
-                    <span className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-md">
+                    <span className="absolute top-3 right-3 bg-red-900/80 border border-red-700 text-red-200 text-xs font-bold px-2 py-1 rounded-md">
                         Non-aktif
                     </span>
                 )}
@@ -47,20 +47,20 @@ function ProductCard({ product }) {
 
             {/* Content */}
             <div className="flex flex-col flex-grow p-5 gap-2">
-                <h3 className="font-bold text-slate-800 text-base line-clamp-1 group-hover:text-indigo-600 transition-colors duration-200">
+                <h3 className="font-bold text-[#F5E9DC] text-base line-clamp-1 group-hover:text-[#D19A6A] transition-colors duration-200">
                     {product.nama_produk}
                 </h3>
 
-                <p className="text-indigo-700 font-extrabold text-lg leading-tight">
+                <p className="text-[#D19A6A] font-extrabold text-lg leading-tight">
                     {formatRupiah(product.harga)}
                 </p>
 
-                <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed flex-grow">
+                <p className="text-sm text-[#B8A08C] line-clamp-2 leading-relaxed flex-grow">
                     {product.deskripsi || "Tidak ada deskripsi untuk produk ini."}
                 </p>
 
                 <div className="pt-2 mt-auto">
-                    <span className="w-full text-center inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold rounded-xl text-indigo-600 bg-indigo-50 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
+                    <span className="w-full text-center inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold rounded-xl text-[#D19A6A] bg-[#2C1D16] border border-[#3D281C] group-hover:bg-[#B87333] group-hover:text-[#F5E9DC] group-hover:border-transparent transition-all duration-300">
                         Lihat Detail →
                     </span>
                 </div>

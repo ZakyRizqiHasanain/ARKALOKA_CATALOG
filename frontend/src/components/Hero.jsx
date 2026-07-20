@@ -2,56 +2,68 @@ import { Link } from "react-router-dom";
 
 function Hero() {
     return (
-        <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-violet-50 py-16 md:py-24">
+        <section className="relative overflow-hidden bg-gradient-to-br from-[#140D09] via-[#21150F] to-[#140D09] py-16 md:py-24 border-b border-[#3D281C]">
             {/* Background decorative circles */}
-            <div className="absolute top-0 left-1/4 h-72 w-72 rounded-full bg-indigo-100 blur-3xl opacity-60"></div>
-            <div className="absolute bottom-0 right-1/4 h-96 w-96 rounded-full bg-violet-100 blur-3xl opacity-60"></div>
+            <div className="absolute top-0 left-1/4 h-80 w-80 rounded-full bg-[#B87333]/10 blur-3xl opacity-50"></div>
+            <div className="absolute bottom-0 right-1/4 h-96 w-96 rounded-full bg-[#D19A6A]/10 blur-3xl opacity-50"></div>
 
             <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
                 <div className="grid md:grid-cols-12 gap-12 items-center">
                     
                     {/* Left Column Text */}
                     <div className="md:col-span-7 space-y-6 text-center md:text-left">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold text-indigo-700 bg-indigo-100/80 mb-2">
-                            ✨ Katalog Produk Modern & Terpercaya
+                        <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold text-[#D19A6A] bg-[#21150F] border border-[#3D281C] shadow-sm mb-2">
+                            <img
+                                src="/logo.png"
+                                alt="ARKALOKA Logo"
+                                className="w-4 h-4 object-contain"
+                            />
+                            Katalog Produk Eksklusif ARKALOKA
                         </span>
-                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 leading-tight tracking-tight">
+                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#F5E9DC] leading-tight tracking-tight">
                             Temukan Produk <br />
-                            <span className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
-                                Terbaik & Berkualitas
+                            <span className="bg-gradient-to-r from-[#B87333] via-[#D19A6A] to-[#F5E9DC] bg-clip-text text-transparent">
+                                Luxury & Modern
                             </span>
                         </h1>
-                        <p className="text-base sm:text-lg text-gray-600 max-w-2xl leading-relaxed">
-                            Jelajahi beragam kategori pilihan mulai dari Elektronik, Fashion, hingga Kuliner nusantara. Cari detail produk yang Anda butuhkan dan hubungi kami langsung via WhatsApp untuk pertanyaan lebih lanjut.
+                        <p className="text-base sm:text-lg text-[#B8A08C] max-w-2xl leading-relaxed">
+                            Selamat datang di ARKALOKA. Jelajahi pilihan produk berkelas dengan desain modern dan kualitas eksklusif. Temukan produk impian Anda dan terhubung langsung via WhatsApp.
                         </p>
                         
                         <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 pt-4">
                             <Link
                                 to="/products"
-                                className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 border border-transparent text-base font-semibold rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all duration-300 transform hover:-translate-y-0.5"
+                                className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 border border-transparent text-base font-bold rounded-xl text-[#F5E9DC] bg-[#B87333] hover:bg-[#A05E22] shadow-xl shadow-[#B87333]/20 transition-all duration-300 transform hover:-translate-y-0.5"
                             >
                                 Jelajahi Katalog
                             </Link>
                             <Link
                                 to="/about"
-                                className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 border border-gray-200 text-base font-semibold rounded-xl text-gray-700 bg-white hover:bg-gray-50 hover:text-indigo-600 shadow-sm transition-all duration-300 transform hover:-translate-y-0.5"
+                                className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 border border-[#3D281C] text-base font-semibold rounded-xl text-[#F5E9DC] bg-[#21150F] hover:bg-[#2C1D16] hover:text-[#D19A6A] shadow-sm transition-all duration-300 transform hover:-translate-y-0.5"
                             >
-                                Pelajari Lebih Lanjut
+                                Tentang ARKALOKA
                             </Link>
                         </div>
                     </div>
 
-                    {/* Right Column Image */}
+                    {/* Right Column Logo Showcase */}
                     <div className="md:col-span-5 relative">
                         <div className="relative mx-auto max-w-md md:max-w-none">
-                            {/* Decorative shadow ring */}
-                            <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-indigo-500 to-violet-500 opacity-10 blur-xl transform rotate-3"></div>
+                            <div className="absolute inset-0 rounded-3xl bg-gradient-to-tr from-[#B87333] to-[#D19A6A] opacity-20 blur-2xl transform rotate-3"></div>
                             
-                            <img
-                                src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&auto=format&fit=crop&q=80"
-                                alt="Modern Catalog App Mockup"
-                                className="relative rounded-2xl border border-gray-100 shadow-2xl object-cover w-full h-[300px] sm:h-[400px]"
-                            />
+                            <div className="relative rounded-3xl border border-[#3D281C] bg-[#21150F]/90 backdrop-blur-md p-10 shadow-2xl flex flex-col items-center justify-center text-center space-y-5">
+                                <img
+                                    src="/logo.png"
+                                    alt="ARKALOKA Logo"
+                                    className="w-44 h-44 object-contain"
+                                />
+                                <span className="text-2xl font-black text-[#F5E9DC] tracking-widest uppercase">
+                                    ARKALOKA
+                                </span>
+                                <p className="text-xs text-[#D19A6A] font-semibold tracking-wider uppercase">
+                                    Dark Luxury Bronze Catalog
+                                </p>
+                            </div>
                         </div>
                     </div>
 

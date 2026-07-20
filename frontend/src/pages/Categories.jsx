@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import CategoryCard from "../components/CategoryCard";
 import { getCategories } from "../services/categoryService";
 
@@ -21,26 +20,31 @@ function CategoriesPage() {
     );
 
     return (
-        <div className="bg-slate-50 min-h-screen">
+        <div className="bg-[#140D09] min-h-screen text-[#F5E9DC]">
 
             {/* ── Page Header ──────────────────────────────────────────── */}
-            <div className="bg-gradient-to-br from-indigo-600 to-violet-600 text-white">
+            <div className="bg-gradient-to-br from-[#21150F] via-[#2C1D16] to-[#140D09] border-b border-[#3D281C] text-[#F5E9DC]">
                 <div className="max-w-7xl mx-auto px-6 py-16 text-center">
-                    <span className="inline-block bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full mb-4 backdrop-blur-sm">
-                        🏷️ Semua Kategori
+                    <span className="inline-flex items-center gap-2 bg-[#140D09]/80 border border-[#3D281C] text-[#D19A6A] text-xs font-semibold px-4 py-1.5 rounded-full mb-4 backdrop-blur-sm">
+                        <img
+                            src="/logo.png"
+                            alt="ARKALOKA Logo"
+                            className="w-3.5 h-3.5 object-contain"
+                        />
+                        Semua Kategori ARKALOKA
                     </span>
                     <h1 className="text-4xl sm:text-5xl font-black mb-4">
-                        Temukan Kategori Anda
+                        Temukan Kategori Produk
                     </h1>
-                    <p className="text-indigo-100 max-w-lg mx-auto text-base sm:text-lg mb-8">
-                        Pilih kategori untuk melihat produk yang sesuai kebutuhan Anda.
+                    <p className="text-[#B8A08C] max-w-lg mx-auto text-base sm:text-lg mb-8">
+                        Pilih kategori untuk melihat produk unggulan yang sesuai kebutuhan Anda.
                     </p>
 
                     {/* Search */}
                     <div className="max-w-sm mx-auto">
                         <div className="relative">
                             <svg
-                                className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60"
+                                className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B8A08C]"
                                 fill="none" viewBox="0 0 24 24" stroke="currentColor"
                             >
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -51,7 +55,7 @@ function CategoriesPage() {
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 placeholder="Cari kategori..."
-                                className="w-full pl-11 pr-4 py-3 bg-white/20 border border-white/30 rounded-2xl text-white placeholder-white/60 text-sm backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-white/50"
+                                className="w-full pl-11 pr-4 py-3 bg-[#140D09] border border-[#3D281C] rounded-2xl text-[#F5E9DC] placeholder-[#B8A08C] text-sm focus:outline-none focus:ring-2 focus:ring-[#B87333]"
                             />
                         </div>
                     </div>
@@ -61,10 +65,9 @@ function CategoriesPage() {
             {/* ── Main Content ──────────────────────────────────────────── */}
             <div className="max-w-7xl mx-auto px-6 py-12">
 
-
                 {/* Count info */}
                 {!loading && !error && (
-                    <p className="text-sm text-gray-500 mb-6">
+                    <p className="text-sm text-[#B8A08C] mb-6">
                         {search
                             ? `Menampilkan ${filtered.length} hasil untuk "${search}"`
                             : `${categories.length} kategori tersedia`}
@@ -73,12 +76,12 @@ function CategoriesPage() {
 
                 {/* Error */}
                 {error && (
-                    <div className="bg-red-50 border border-red-100 rounded-2xl p-8 text-center text-red-600">
+                    <div className="bg-red-950/40 border border-red-800/50 rounded-2xl p-8 text-center text-red-400">
                         <span className="text-3xl block mb-2">⚠️</span>
                         <p>{error}</p>
                         <button
                             onClick={() => window.location.reload()}
-                            className="mt-4 px-6 py-2 bg-red-600 text-white text-sm font-semibold rounded-xl hover:bg-red-700 transition-colors"
+                            className="mt-4 px-6 py-2 bg-[#B87333] text-[#F5E9DC] text-sm font-semibold rounded-xl hover:bg-[#A05E22] transition-colors"
                         >
                             Coba Lagi
                         </button>
@@ -89,7 +92,7 @@ function CategoriesPage() {
                 {loading && (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
                         {[...Array(10)].map((_, i) => (
-                            <div key={i} className="h-44 bg-gray-200 rounded-2xl animate-pulse" />
+                            <div key={i} className="h-44 bg-[#21150F] border border-[#3D281C] rounded-2xl animate-pulse" />
                         ))}
                     </div>
                 )}
@@ -98,16 +101,16 @@ function CategoriesPage() {
                 {!loading && !error && filtered.length === 0 && (
                     <div className="text-center py-20">
                         <span className="text-5xl block mb-4">🔍</span>
-                        <h3 className="font-bold text-slate-800 text-xl mb-2">
+                        <h3 className="font-bold text-[#F5E9DC] text-xl mb-2">
                             {search ? "Kategori tidak ditemukan" : "Belum ada kategori"}
                         </h3>
-                        <p className="text-gray-400 text-sm">
+                        <p className="text-[#B8A08C] text-sm">
                             {search ? `Coba cari dengan kata kunci lain.` : "Kategori akan segera tersedia."}
                         </p>
                         {search && (
                             <button
                                 onClick={() => setSearch("")}
-                                className="mt-4 px-6 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 transition-colors"
+                                className="mt-4 px-6 py-2 bg-[#B87333] text-[#F5E9DC] text-sm font-semibold rounded-xl hover:bg-[#A05E22] transition-colors"
                             >
                                 Reset Pencarian
                             </button>

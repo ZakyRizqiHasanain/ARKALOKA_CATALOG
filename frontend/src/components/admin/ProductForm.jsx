@@ -2,23 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { getCategories } from "../../services/categoryService";
 import { uploadProductImage } from "../../services/productAdminService";
 
-/**
- * ProductForm — reusable form untuk Add & Edit produk
- *
- * Props:
- *   initialData  — object data produk saat edit, atau null saat tambah
- *   onSubmit(formData) — callback saat form di-submit (async)
- *   onCancel()   — callback saat Batal diklik
- *   isLoading    — boolean dari parent (disable tombol submit)
- *
- * Field (sesuai DB columns via frontend naming convention):
- *   name         → nama_produk
- *   price        → harga
- *   description  → deskripsi
- *   image        → gambar
- *   category_id  → kategori_id
- *   status       → status
- */
 function ProductForm({ initialData = null, onSubmit, onCancel, isLoading = false }) {
     const isEdit = !!initialData;
     const fileInputRef = useRef(null);
@@ -53,12 +36,10 @@ function ProductForm({ initialData = null, onSubmit, onCancel, isLoading = false
         if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
     };
 
-    // Upload file gambar ke server → set URL ke form.image
     const handleFileChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
-        // Preview lokal sementara
         const localUrl = URL.createObjectURL(file);
         setImagePreview(localUrl);
         setUploadError("");
@@ -70,7 +51,7 @@ function ProductForm({ initialData = null, onSubmit, onCancel, isLoading = false
             setImagePreview(result.url);
         } catch (err) {
             setUploadError(err.message || "Gagal upload gambar");
-            setImagePreview(form.image); // kembalikan ke URL sebelumnya
+            setImagePreview(form.image);
         } finally {
             setUploadingImage(false);
         }
@@ -93,33 +74,33 @@ function ProductForm({ initialData = null, onSubmit, onCancel, isLoading = false
     };
 
     const inputCls = (field) =>
-        `w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-white ${
-            errors[field] ? "border-red-400 bg-red-50" : "border-gray-200"
+        `w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#B87333] transition-all bg-[#140D09] text-[#F5E9DC] placeholder-[#B8A08C]/50 ${
+            errors[field] ? "border-red-500 bg-red-950/20" : "border-[#3D281C]"
         }`;
 
     return (
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5 text-[#F5E9DC]">
 
             {/* Nama Produk */}
             <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Nama Produk <span className="text-red-500">*</span>
+                <label className="block text-sm font-semibold text-[#B8A08C] mb-1">
+                    Nama Produk <span className="text-red-400">*</span>
                 </label>
                 <input
                     type="text"
                     name="name"
                     value={form.name}
                     onChange={handleChange}
-                    placeholder="Contoh: Laptop ASUS ROG"
+                    placeholder="Contoh: Kemeja Linen Premium ARKALOKA"
                     className={inputCls("name")}
                 />
-                {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+                {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
             </div>
 
             {/* Harga */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Harga (Rp) <span className="text-red-500">*</span>
+                <label className="block text-sm font-semibold text-[#B8A08C] mb-1">
+                    Harga (Rp) <span className="text-red-400">*</span>
                 </label>
                 <input
                     type="number"
@@ -130,16 +111,16 @@ function ProductForm({ initialData = null, onSubmit, onCancel, isLoading = false
                     min="0"
                     className={inputCls("price")}
                 />
-                {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price}</p>}
+                {errors.price && <p className="text-red-400 text-xs mt-1">{errors.price}</p>}
             </div>
 
             {/* Kategori */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Kategori <span className="text-red-500">*</span>
+                <label className="block text-sm font-semibold text-[#B8A08C] mb-1">
+                    Kategori <span className="text-red-400">*</span>
                 </label>
                 {loadingCats ? (
-                    <div className="h-10 bg-gray-100 rounded-xl animate-pulse" />
+                    <div className="h-10 bg-[#2C1D16] rounded-xl animate-pulse" />
                 ) : (
                     <select
                         name="category_id"
@@ -148,7 +129,6 @@ function ProductForm({ initialData = null, onSubmit, onCancel, isLoading = false
                         className={inputCls("category_id")}
                     >
                         <option value="">-- Pilih Kategori --</option>
-                        {/* nama_kategori adalah nama kolom actual di DB */}
                         {categories.map((c) => (
                             <option key={c.id} value={c.id}>
                                 {c.nama_kategori}
@@ -156,12 +136,12 @@ function ProductForm({ initialData = null, onSubmit, onCancel, isLoading = false
                         ))}
                     </select>
                 )}
-                {errors.category_id && <p className="text-red-500 text-xs mt-1">{errors.category_id}</p>}
+                {errors.category_id && <p className="text-red-400 text-xs mt-1">{errors.category_id}</p>}
             </div>
 
             {/* Status */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <label className="block text-sm font-semibold text-[#B8A08C] mb-1">Status</label>
                 <select
                     name="status"
                     value={form.status}
@@ -173,27 +153,27 @@ function ProductForm({ initialData = null, onSubmit, onCancel, isLoading = false
                 </select>
             </div>
 
-            {/* Gambar — URL input + file upload */}
+            {/* Gambar */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Gambar</label>
+                <label className="block text-sm font-semibold text-[#B8A08C] mb-1">Gambar</label>
                 <input
                     type="url"
                     name="image"
                     value={form.image}
                     onChange={handleChange}
                     placeholder="https://example.com/image.jpg"
-                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-2"
+                    className="w-full border border-[#3D281C] bg-[#140D09] text-[#F5E9DC] placeholder-[#B8A08C]/50 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#B87333] mb-2"
                 />
                 <div className="flex items-center gap-2">
                     <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
                         disabled={uploadingImage}
-                        className="text-xs px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                        className="text-xs px-3 py-1.5 bg-[#2C1D16] border border-[#3D281C] hover:bg-[#3D281C] text-[#F5E9DC] rounded-lg transition-colors disabled:opacity-50"
                     >
                         {uploadingImage ? "Mengupload..." : "📁 Upload File"}
                     </button>
-                    <span className="text-xs text-gray-400">atau paste URL di atas</span>
+                    <span className="text-xs text-[#B8A08C]">atau paste URL di atas</span>
                 </div>
                 <input
                     ref={fileInputRef}
@@ -202,14 +182,14 @@ function ProductForm({ initialData = null, onSubmit, onCancel, isLoading = false
                     onChange={handleFileChange}
                     className="hidden"
                 />
-                {uploadError && <p className="text-red-500 text-xs mt-1">{uploadError}</p>}
+                {uploadError && <p className="text-red-400 text-xs mt-1">{uploadError}</p>}
             </div>
 
             {/* Preview Gambar */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Preview</label>
+                <label className="block text-sm font-semibold text-[#B8A08C] mb-1">Preview</label>
                 {imagePreview ? (
-                    <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
+                    <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-[#140D09] border border-[#3D281C]">
                         <img
                             src={imagePreview}
                             alt="Preview"
@@ -217,13 +197,13 @@ function ProductForm({ initialData = null, onSubmit, onCancel, isLoading = false
                             onError={(e) => { e.target.src = ""; setImagePreview(""); }}
                         />
                         {uploadingImage && (
-                            <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
-                                <span className="text-xs text-gray-500 animate-pulse">Mengupload...</span>
+                            <div className="absolute inset-0 bg-[#140D09]/80 flex items-center justify-center">
+                                <span className="text-xs text-[#D19A6A] animate-pulse">Mengupload...</span>
                             </div>
                         )}
                     </div>
                 ) : (
-                    <div className="w-full aspect-video rounded-xl bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs">
+                    <div className="w-full aspect-video rounded-xl bg-[#140D09] border border-dashed border-[#3D281C] flex items-center justify-center text-[#B8A08C] text-xs">
                         Belum ada gambar
                     </div>
                 )}
@@ -231,14 +211,14 @@ function ProductForm({ initialData = null, onSubmit, onCancel, isLoading = false
 
             {/* Deskripsi */}
             <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+                <label className="block text-sm font-semibold text-[#B8A08C] mb-1">Deskripsi</label>
                 <textarea
                     name="description"
                     value={form.description}
                     onChange={handleChange}
                     placeholder="Tuliskan deskripsi produk secara lengkap..."
                     rows={4}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+                    className="w-full border border-[#3D281C] bg-[#140D09] text-[#F5E9DC] placeholder-[#B8A08C]/50 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#B87333] resize-none"
                 />
             </div>
 
@@ -247,7 +227,7 @@ function ProductForm({ initialData = null, onSubmit, onCancel, isLoading = false
                 <button
                     type="submit"
                     disabled={isLoading || uploadingImage}
-                    className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-semibold text-sm rounded-xl transition-colors"
+                    className="px-6 py-2.5 bg-[#B87333] hover:bg-[#A05E22] disabled:opacity-50 text-[#F5E9DC] font-semibold text-sm rounded-xl transition-colors shadow-md"
                 >
                     {isLoading ? "Menyimpan..." : isEdit ? "Simpan Perubahan" : "Tambah Produk"}
                 </button>
@@ -255,7 +235,7 @@ function ProductForm({ initialData = null, onSubmit, onCancel, isLoading = false
                     type="button"
                     onClick={onCancel}
                     disabled={isLoading}
-                    className="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm rounded-xl transition-colors"
+                    className="px-6 py-2.5 bg-[#2C1D16] border border-[#3D281C] hover:bg-[#3D281C] text-[#B8A08C] hover:text-[#F5E9DC] font-semibold text-sm rounded-xl transition-colors"
                 >
                     Batal
                 </button>

@@ -16,28 +16,25 @@ function Navbar() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    // Shadow on scroll
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 8);
         window.addEventListener("scroll", onScroll);
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
 
-    // Close mobile menu on route change
     useEffect(() => {
         setIsOpen(false);
         setSearchOpen(false);
     }, [location]);
 
-    // Focus search input when opened
     useEffect(() => {
         if (searchOpen) searchRef.current?.focus();
     }, [searchOpen]);
 
     const isActive = (to) =>
         location.pathname === to
-            ? "text-indigo-600 font-bold"
-            : "text-gray-600 hover:text-indigo-600 font-medium transition-colors duration-200";
+            ? "text-[#D19A6A] font-bold"
+            : "text-[#B8A08C] hover:text-[#D19A6A] font-medium transition-colors duration-200";
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -50,23 +47,25 @@ function Navbar() {
 
     return (
         <nav
-            className={`w-full sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-gray-100 transition-shadow duration-300 ${
-                scrolled ? "shadow-md" : "shadow-sm"
+            className={`w-full sticky top-0 z-50 bg-[#21150F]/90 backdrop-blur-lg border-b border-[#3D281C] transition-shadow duration-300 ${
+                scrolled ? "shadow-lg shadow-[#140D09]/50" : "shadow-sm"
             }`}
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16 sm:h-18">
 
-                    {/* Logo */}
+                    {/* Brand Logo & Name */}
                     <Link
                         to="/"
-                        className="flex-shrink-0 flex items-center gap-2 group"
+                        className="flex-shrink-0 flex items-center gap-3 group"
                     >
-                        <div className="w-8 h-8 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-lg flex items-center justify-center text-white font-black text-sm shadow-sm group-hover:shadow-indigo-200 transition-shadow">
-                            PS
-                        </div>
-                        <span className="text-xl font-black bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent tracking-tight">
-                            Product Store
+                        <img
+                            src="/logo.png"
+                            alt="ARKALOKA Logo"
+                            className="w-9 h-9 object-contain transform group-hover:scale-105 transition-transform"
+                        />
+                        <span className="text-xl font-black text-[#F5E9DC] tracking-wider uppercase">
+                            ARKALOKA
                         </span>
                     </Link>
 
@@ -81,7 +80,6 @@ function Navbar() {
 
                     {/* Desktop Right Actions */}
                     <div className="hidden md:flex items-center gap-3">
-                        {/* Search toggle */}
                         {searchOpen ? (
                             <form onSubmit={handleSearch} className="flex items-center gap-2">
                                 <input
@@ -90,18 +88,18 @@ function Navbar() {
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     placeholder="Cari produk..."
-                                    className="w-52 px-4 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50"
+                                    className="w-52 px-4 py-2 text-sm border border-[#3D281C] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B87333] bg-[#140D09] text-[#F5E9DC] placeholder-[#B8A08C]"
                                 />
                                 <button
                                     type="submit"
-                                    className="px-3 py-2 bg-indigo-600 text-white rounded-xl text-sm font-semibold hover:bg-indigo-700 transition-colors"
+                                    className="px-3.5 py-2 bg-[#B87333] text-[#F5E9DC] rounded-xl text-sm font-semibold hover:bg-[#A05E22] transition-colors"
                                 >
                                     Cari
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setSearchOpen(false)}
-                                    className="text-gray-400 hover:text-gray-600 text-lg"
+                                    className="text-[#B8A08C] hover:text-[#F5E9DC] text-lg px-1"
                                 >
                                     ✕
                                 </button>
@@ -109,7 +107,7 @@ function Navbar() {
                         ) : (
                             <button
                                 onClick={() => setSearchOpen(true)}
-                                className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"
+                                className="p-2 text-[#B8A08C] hover:text-[#D19A6A] hover:bg-[#2C1D16] rounded-xl transition-colors"
                                 title="Cari produk"
                             >
                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -124,7 +122,7 @@ function Navbar() {
                     <div className="md:hidden flex items-center gap-2">
                         <button
                             onClick={() => setSearchOpen(!searchOpen)}
-                            className="p-2 text-gray-500 hover:text-indigo-600 rounded-xl transition-colors"
+                            className="p-2 text-[#B8A08C] hover:text-[#D19A6A] rounded-xl transition-colors"
                         >
                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -133,7 +131,7 @@ function Navbar() {
                         </button>
                         <button
                             onClick={() => setIsOpen(!isOpen)}
-                            className="p-2 text-gray-500 hover:text-gray-700 rounded-xl hover:bg-gray-100 transition-colors"
+                            className="p-2 text-[#B8A08C] hover:text-[#F5E9DC] rounded-xl hover:bg-[#2C1D16] transition-colors"
                         >
                             {isOpen ? (
                                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -158,11 +156,11 @@ function Navbar() {
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Cari produk..."
-                                className="flex-1 px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50"
+                                className="flex-1 px-4 py-2.5 text-sm border border-[#3D281C] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B87333] bg-[#140D09] text-[#F5E9DC] placeholder-[#B8A08C]"
                             />
                             <button
                                 type="submit"
-                                className="px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-semibold"
+                                className="px-4 py-2.5 bg-[#B87333] text-[#F5E9DC] rounded-xl text-sm font-semibold"
                             >
                                 Cari
                             </button>
@@ -173,7 +171,7 @@ function Navbar() {
 
             {/* Mobile Drawer */}
             {isOpen && (
-                <div className="md:hidden bg-white border-t border-gray-100 shadow-lg">
+                <div className="md:hidden bg-[#21150F] border-t border-[#3D281C] shadow-xl">
                     <div className="px-4 py-4 space-y-1">
                         {NAV_LINKS.map(({ to, label }) => (
                             <Link
@@ -181,8 +179,8 @@ function Navbar() {
                                 to={to}
                                 className={`block px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
                                     location.pathname === to
-                                        ? "bg-indigo-50 text-indigo-600 font-bold"
-                                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                                        ? "bg-[#2C1D16] text-[#D19A6A] font-bold"
+                                        : "text-[#B8A08C] hover:bg-[#2C1D16] hover:text-[#F5E9DC]"
                                 }`}
                             >
                                 {label}
