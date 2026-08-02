@@ -30,7 +30,8 @@ async function apiClient(endpoint, options = {}) {
         delete headers["Content-Type"];
     }
 
-    const response = await fetch(`${API_BASE}${endpoint}`, {
+    const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+    const response = await fetch(`${API_BASE}${cleanEndpoint}`, {
         ...options,
         headers,
     });
