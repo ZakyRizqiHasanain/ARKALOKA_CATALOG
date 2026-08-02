@@ -6,7 +6,9 @@
  * - Jika response 401 (token expired/invalid) → bersihkan storage & redirect login
  */
 
-const API_BASE = import.meta.env.VITE_API_URL || "https://arkaloka-backend.vercel.app/api";
+import API_URL from "../services/api";
+
+const API_BASE = API_URL;
 
 function clearAuthAndRedirect() {
     localStorage.removeItem("token");

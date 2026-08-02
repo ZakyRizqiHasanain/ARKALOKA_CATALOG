@@ -18,19 +18,11 @@ const allowedOrigins = process.env.CORS_ORIGIN
     ? process.env.CORS_ORIGIN.split(",")
     : ["http://localhost:5173", "http://localhost:5174"];
 
-app.use(
-    cors({
-        origin: (origin, callback) => {
-            // Allow requests with no origin (like mobile apps, curl, postman, or server-to-server)
-            if (!origin) return callback(null, true);
-            if (process.env.NODE_ENV === "production" || allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes("*")) {
-                return callback(null, true);
-            }
-            return callback(null, true); // Permissive CORS for smooth deployment
-        },
-        credentials: true,
-    })
-);
+// Permissive CORS for smooth deployment
+app.use(cors({
+    origin: true,
+    credentials: true
+}));
 app.use(express.json());
 
 // Static files — serve folder uploads/ agar gambar bisa diakses via URL
