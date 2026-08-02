@@ -3,18 +3,12 @@ const path = require("path");
 require("dotenv").config({ path: path.join(__dirname, "../../.env") });
 
 
-const config = process.env.DATABASE_URL
-    ? {
-          connectionString: process.env.DATABASE_URL,
-          ssl: { rejectUnauthorized: false },
-      }
-    : {
-          user: process.env.DB_USER,
-          host: process.env.DB_HOST,
-          database: process.env.DB_NAME,
-          password: process.env.DB_PASSWORD,
-          port: process.env.DB_PORT,
-      };
+const connectionString = process.env.DATABASE_URL || "postgresql://postgres:Akunbaru13*@db.utzrhmxfttvtqkepxipe.supabase.co:5432/postgres";
+
+const config = {
+    connectionString,
+    ssl: { rejectUnauthorized: false },
+};
 
 const pool = new Pool(config);
 
