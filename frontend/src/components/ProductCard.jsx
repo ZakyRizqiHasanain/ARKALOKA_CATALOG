@@ -8,60 +8,60 @@ function ProductCard({ product }) {
             minimumFractionDigits: 0,
         }).format(n);
 
-    const imageUrl =
-        product.gambar ||
-        "https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=600&auto=format&fit=crop&q=60";
-
+    const imageUrl = product.gambar || "/logo.png";
     const isActive = product.status === "active";
 
     return (
         <Link
             to={`/products/${product.id}`}
-            className="group flex flex-col h-full bg-[#21150F] rounded-2xl border border-[#3D281C] shadow-md hover:shadow-2xl hover:border-[#B87333]/50 hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+            className="group flex flex-col h-full bg-[#FFFFFF] rounded-2xl border border-[#E8CBA6] shadow-sm hover:shadow-xl hover:border-[#8C6A4A] hover:-translate-y-1 transition-all duration-300 overflow-hidden"
         >
             {/* Image */}
-            <div className="relative overflow-hidden aspect-[4/3] bg-[#140D09]">
+            <div className="relative overflow-hidden aspect-[4/3] bg-[#FBF7F1]">
                 <img
                     src={imageUrl}
-                    alt={product.nama_produk}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
+                    alt={product.nama_produk || "ARKALOKA Project"}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     loading="lazy"
                     onError={(e) => {
-                        e.target.src =
-                            "https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=600&auto=format&fit=crop&q=60";
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = "/logo.png";
                     }}
                 />
 
-                {/* Category badge */}
-                <span className="absolute top-3 left-3 bg-[#140D09]/80 backdrop-blur-md text-[#D19A6A] text-xs font-semibold px-2.5 py-1 rounded-md shadow-sm border border-[#3D281C]">
-                    {product.category || "Umum"}
+                {/* Kategori Layanan badge */}
+                <span className="absolute top-3 left-3 bg-[#C79E72] text-[#4E3A2C] text-xs font-bold px-2.5 py-1 rounded-md shadow-sm border border-[#E8CBA6]">
+                    {product.category || "Web Development"}
                 </span>
 
-                {/* Status badge (only show if inactive) */}
+                {/* Status badge */}
                 {!isActive && (
-                    <span className="absolute top-3 right-3 bg-red-900/80 border border-red-700 text-red-200 text-xs font-bold px-2 py-1 rounded-md">
-                        Non-aktif
+                    <span className="absolute top-3 right-3 bg-red-800 text-white text-xs font-bold px-2 py-1 rounded-md">
+                        Selesai
                     </span>
                 )}
             </div>
 
             {/* Content */}
             <div className="flex flex-col flex-grow p-5 gap-2">
-                <h3 className="font-bold text-[#F5E9DC] text-base line-clamp-1 group-hover:text-[#D19A6A] transition-colors duration-200">
+                <h3 className="font-bold text-[#4E3A2C] text-base line-clamp-1 group-hover:text-[#8C6A4A] transition-colors duration-200">
                     {product.nama_produk}
                 </h3>
 
-                <p className="text-[#D19A6A] font-extrabold text-lg leading-tight">
-                    {formatRupiah(product.harga)}
-                </p>
+                <div className="flex items-center justify-between">
+                    <span className="text-xs text-[#9A8F81] font-medium uppercase tracking-wider">Estimasi Project</span>
+                    <p className="text-[#8C6A4A] font-extrabold text-sm leading-tight">
+                        {product.harga ? formatRupiah(product.harga) : "Custom Pricing"}
+                    </p>
+                </div>
 
-                <p className="text-sm text-[#B8A08C] line-clamp-2 leading-relaxed flex-grow">
-                    {product.deskripsi || "Tidak ada deskripsi untuk produk ini."}
+                <p className="text-sm text-[#9A8F81] line-clamp-2 leading-relaxed flex-grow">
+                    {product.deskripsi || "Solusi pengerjaan project IT dan pembuatan website profesional."}
                 </p>
 
                 <div className="pt-2 mt-auto">
-                    <span className="w-full text-center inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold rounded-xl text-[#D19A6A] bg-[#2C1D16] border border-[#3D281C] group-hover:bg-[#B87333] group-hover:text-[#F5E9DC] group-hover:border-transparent transition-all duration-300">
-                        Lihat Detail →
+                    <span className="w-full text-center inline-flex items-center justify-center px-4 py-2.5 text-sm font-bold rounded-xl text-[#FBF7F1] bg-[#8C6A4A] border border-transparent group-hover:bg-[#4E3A2C] transition-all duration-300 shadow-sm">
+                        Detail Project →
                     </span>
                 </div>
             </div>

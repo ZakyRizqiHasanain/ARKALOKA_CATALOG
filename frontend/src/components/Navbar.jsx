@@ -3,8 +3,9 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const NAV_LINKS = [
     { to: "/", label: "Home" },
-    { to: "/products", label: "Produk" },
-    { to: "/categories", label: "Kategori" },
+    { to: "/products", label: "Project" },
+    { to: "/categories", label: "Layanan" },
+    { to: "/about", label: "About" },
 ];
 
 function Navbar() {
@@ -33,8 +34,8 @@ function Navbar() {
 
     const isActive = (to) =>
         location.pathname === to
-            ? "text-[#D19A6A] font-bold"
-            : "text-[#B8A08C] hover:text-[#D19A6A] font-medium transition-colors duration-200";
+            ? "text-[#8C6A4A] font-bold border-b-2 border-[#8C6A4A]"
+            : "text-[#9A8F81] hover:text-[#8C6A4A] font-medium transition-colors duration-200";
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -47,8 +48,8 @@ function Navbar() {
 
     return (
         <nav
-            className={`w-full sticky top-0 z-50 bg-[#21150F]/90 backdrop-blur-lg border-b border-[#3D281C] transition-shadow duration-300 ${
-                scrolled ? "shadow-lg shadow-[#140D09]/50" : "shadow-sm"
+            className={`w-full sticky top-0 z-50 bg-[#FFFFFF]/95 backdrop-blur-lg border-b border-[#E8CBA6] transition-shadow duration-300 ${
+                scrolled ? "shadow-md shadow-[#4E3A2C]/5" : "shadow-sm"
             }`}
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -64,7 +65,7 @@ function Navbar() {
                             alt="ARKALOKA Logo"
                             className="w-9 h-9 object-contain transform group-hover:scale-105 transition-transform"
                         />
-                        <span className="text-xl font-black text-[#F5E9DC] tracking-wider uppercase">
+                        <span className="text-xl font-black text-[#4E3A2C] tracking-wider uppercase">
                             ARKALOKA
                         </span>
                     </Link>
@@ -72,7 +73,7 @@ function Navbar() {
                     {/* Desktop Nav */}
                     <div className="hidden md:flex items-center gap-8">
                         {NAV_LINKS.map(({ to, label }) => (
-                            <Link key={to} to={to} className={`text-sm pb-0.5 ${isActive(to)}`}>
+                            <Link key={to} to={to} className={`text-sm pb-1 ${isActive(to)}`}>
                                 {label}
                             </Link>
                         ))}
@@ -87,19 +88,19 @@ function Navbar() {
                                     type="text"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    placeholder="Cari produk..."
-                                    className="w-52 px-4 py-2 text-sm border border-[#3D281C] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B87333] bg-[#140D09] text-[#F5E9DC] placeholder-[#B8A08C]"
+                                    placeholder="Cari project..."
+                                    className="w-52 px-4 py-2 text-sm border border-[#E8CBA6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8C6A4A] bg-[#FBF7F1] text-[#4E3A2C] placeholder-[#9A8F81]/70"
                                 />
                                 <button
                                     type="submit"
-                                    className="px-3.5 py-2 bg-[#B87333] text-[#F5E9DC] rounded-xl text-sm font-semibold hover:bg-[#A05E22] transition-colors"
+                                    className="px-3.5 py-2 bg-[#8C6A4A] text-[#FBF7F1] rounded-xl text-sm font-semibold hover:bg-[#4E3A2C] transition-colors"
                                 >
                                     Cari
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setSearchOpen(false)}
-                                    className="text-[#B8A08C] hover:text-[#F5E9DC] text-lg px-1"
+                                    className="text-[#9A8F81] hover:text-[#4E3A2C] text-lg px-1"
                                 >
                                     ✕
                                 </button>
@@ -107,8 +108,8 @@ function Navbar() {
                         ) : (
                             <button
                                 onClick={() => setSearchOpen(true)}
-                                className="p-2 text-[#B8A08C] hover:text-[#D19A6A] hover:bg-[#2C1D16] rounded-xl transition-colors"
-                                title="Cari produk"
+                                className="p-2 text-[#9A8F81] hover:text-[#8C6A4A] hover:bg-[#E8CBA6]/40 rounded-xl transition-colors"
+                                title="Cari project"
                             >
                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -122,7 +123,7 @@ function Navbar() {
                     <div className="md:hidden flex items-center gap-2">
                         <button
                             onClick={() => setSearchOpen(!searchOpen)}
-                            className="p-2 text-[#B8A08C] hover:text-[#D19A6A] rounded-xl transition-colors"
+                            className="p-2 text-[#9A8F81] hover:text-[#8C6A4A] rounded-xl transition-colors"
                         >
                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -131,7 +132,7 @@ function Navbar() {
                         </button>
                         <button
                             onClick={() => setIsOpen(!isOpen)}
-                            className="p-2 text-[#B8A08C] hover:text-[#F5E9DC] rounded-xl hover:bg-[#2C1D16] transition-colors"
+                            className="p-2 text-[#9A8F81] hover:text-[#8C6A4A] rounded-xl hover:bg-[#E8CBA6]/40 transition-colors"
                         >
                             {isOpen ? (
                                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -155,12 +156,12 @@ function Navbar() {
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Cari produk..."
-                                className="flex-1 px-4 py-2.5 text-sm border border-[#3D281C] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B87333] bg-[#140D09] text-[#F5E9DC] placeholder-[#B8A08C]"
+                                placeholder="Cari project..."
+                                className="flex-1 px-4 py-2.5 text-sm border border-[#E8CBA6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8C6A4A] bg-[#FBF7F1] text-[#4E3A2C] placeholder-[#9A8F81]/70"
                             />
                             <button
                                 type="submit"
-                                className="px-4 py-2.5 bg-[#B87333] text-[#F5E9DC] rounded-xl text-sm font-semibold"
+                                className="px-4 py-2.5 bg-[#8C6A4A] hover:bg-[#4E3A2C] text-[#FBF7F1] rounded-xl text-sm font-semibold"
                             >
                                 Cari
                             </button>
@@ -171,7 +172,7 @@ function Navbar() {
 
             {/* Mobile Drawer */}
             {isOpen && (
-                <div className="md:hidden bg-[#21150F] border-t border-[#3D281C] shadow-xl">
+                <div className="md:hidden bg-[#FFFFFF] border-t border-[#E8CBA6] shadow-xl">
                     <div className="px-4 py-4 space-y-1">
                         {NAV_LINKS.map(({ to, label }) => (
                             <Link
@@ -179,8 +180,8 @@ function Navbar() {
                                 to={to}
                                 className={`block px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
                                     location.pathname === to
-                                        ? "bg-[#2C1D16] text-[#D19A6A] font-bold"
-                                        : "text-[#B8A08C] hover:bg-[#2C1D16] hover:text-[#F5E9DC]"
+                                        ? "bg-[#E8CBA6]/40 text-[#8C6A4A] font-bold"
+                                        : "text-[#4E3A2C] hover:bg-[#FBF7F1] hover:text-[#8C6A4A]"
                                 }`}
                             >
                                 {label}

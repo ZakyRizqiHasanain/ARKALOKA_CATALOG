@@ -47,8 +47,8 @@ function Login() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[#140D09] px-6 text-[#F5E9DC]">
-            <div className="w-full max-w-md bg-[#21150F] rounded-3xl shadow-2xl border border-[#3D281C] p-8">
+        <div className="min-h-screen flex items-center justify-center bg-[#FBF7F1] px-6 text-[#4E3A2C]">
+            <div className="w-full max-w-md bg-[#FFFFFF] rounded-3xl shadow-xl border border-[#E8CBA6] p-8">
                 {/* Logo & Header */}
                 <div className="flex flex-col items-center justify-center text-center mb-8">
                     <img
@@ -56,21 +56,21 @@ function Login() {
                         alt="ARKALOKA Logo"
                         className="w-16 h-16 object-contain mb-3"
                     />
-                    <h1 className="text-2xl font-black text-[#F5E9DC] tracking-wider uppercase">
+                    <h1 className="text-2xl font-black text-[#4E3A2C] tracking-wider uppercase">
                         ARKALOKA ADMIN
                     </h1>
-                    <p className="text-xs text-[#B8A08C] mt-1">Masuk ke panel pengelolaan katalog</p>
+                    <p className="text-xs text-[#9A8F81] mt-1 font-medium">Masuk ke panel pengelolaan katalog</p>
                 </div>
 
                 {error && (
-                    <div className="mb-6 bg-red-950/40 border border-red-800/50 text-red-300 text-sm p-4 rounded-xl">
+                    <div className="mb-6 bg-red-50 border border-red-200 text-red-700 text-sm p-4 rounded-xl">
                         {error}
                     </div>
                 )}
 
                 <form onSubmit={handleLogin} className="space-y-5">
                     <div>
-                        <label className="block mb-2 text-sm font-semibold text-[#B8A08C]">
+                        <label className="block mb-2 text-sm font-bold text-[#4E3A2C]">
                             Email
                         </label>
                         <input
@@ -78,13 +78,13 @@ function Login() {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="admin@example.com"
-                            className="w-full border border-[#3D281C] rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#B87333] transition-all bg-[#140D09] text-[#F5E9DC] placeholder-[#B8A08C]/50"
+                            className="w-full border border-[#E8CBA6] rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#8C6A4A] transition-all bg-[#FBF7F1] text-[#4E3A2C] placeholder-[#9A8F81]/60"
                             required
                         />
                     </div>
 
                     <div>
-                        <label className="block mb-2 text-sm font-semibold text-[#B8A08C]">
+                        <label className="block mb-2 text-sm font-bold text-[#4E3A2C]">
                             Password
                         </label>
                         <input
@@ -92,7 +92,7 @@ function Login() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="••••••••"
-                            className="w-full border border-[#3D281C] rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#B87333] transition-all bg-[#140D09] text-[#F5E9DC] placeholder-[#B8A08C]/50"
+                            className="w-full border border-[#E8CBA6] rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#8C6A4A] transition-all bg-[#FBF7F1] text-[#4E3A2C] placeholder-[#9A8F81]/60"
                             required
                         />
                     </div>
@@ -100,7 +100,7 @@ function Login() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-[#B87333] text-[#F5E9DC] py-3.5 rounded-xl font-bold hover:bg-[#A05E22] transition-colors shadow-lg shadow-[#B87333]/20 disabled:opacity-50"
+                        className="w-full bg-[#8C6A4A] text-[#FBF7F1] py-3.5 rounded-xl font-bold hover:bg-[#4E3A2C] transition-colors shadow-md disabled:opacity-50"
                     >
                         {loading ? "Memproses..." : "Masuk ke Admin"}
                     </button>

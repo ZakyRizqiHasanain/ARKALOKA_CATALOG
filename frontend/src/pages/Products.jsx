@@ -25,7 +25,7 @@ function Products() {
         currentPage: 1
     });
 
-    const limit = 8;
+    const limit = 50;
 
     useEffect(() => {
         setSelectedCategory(catParam);
@@ -43,7 +43,6 @@ function Products() {
     useEffect(() => {
         setLoading(true);
         getProducts({
-            q: search,
             category: selectedCategory,
             sort: sort,
             page: page,
@@ -55,16 +54,29 @@ function Products() {
                 setError(null);
             })
             .catch((err) => {
-                console.error("Gagal memuat produk:", err);
-                setError("Gagal mengambil produk dari server.");
+                console.error("Gagal memuat project:", err);
+                setError("Gagal mengambil daftar project dari server.");
             })
             .finally(() => setLoading(false));
     }, [selectedCategory, sort, page]);
 
-    const handleSearchSubmit = (e) => {
-        e.preventDefault();
-        setPage(1);
-        setSearchParams({ category: selectedCategory, q: search });
+    const filteredProducts = products.filter((p) => {
+        const q = search.toLowerCase().trim();
+        if (!q) return true;
+        const nameMatch = (p.nama_produk || p.name || "").toLowerCase().includes(q);
+        const descMatch = (p.deskripsi || p.description || "").toLowerCase().includes(q);
+        const catMatch = (p.category || "").toLowerCase().includes(q);
+        return nameMatch || descMatch || catMatch;
+    });
+
+    const handleSearchChange = (e) => {
+        const val = e.target.value;
+        setSearch(val);
+        if (val) {
+            setSearchParams({ category: selectedCategory, q: val });
+        } else {
+            setSearchParams(selectedCategory ? { category: selectedCategory } : {});
+        }
     };
 
     const handleResetFilters = () => {
@@ -76,14 +88,14 @@ function Products() {
     };
 
     return (
-        <section className="max-w-7xl mx-auto px-6 py-10 md:py-16 min-h-screen bg-[#140D09] text-[#F5E9DC]">
+        <section className="max-w-7xl mx-auto px-6 py-10 md:py-16 min-h-screen bg-[#FBF7F1] text-[#4E3A2C]">
             {/* Header */}
             <div className="mb-10 text-center md:text-left">
-                <h1 className="text-3xl sm:text-4xl font-extrabold text-[#F5E9DC] tracking-tight">
-                    Katalog Produk ARKALOKA
+                <h1 className="text-3xl sm:text-4xl font-extrabold text-[#4E3A2C] tracking-tight">
+                    Showcase Project ARKALOKA
                 </h1>
-                <p className="text-[#B8A08C] mt-2">
-                    Jelajahi koleksi produk eksklusif kami untuk kebutuhan dan gaya hidup Anda.
+                <p className="text-[#9A8F81] mt-2">
+                    Jelajahi portofolio project, aplikasi web, dan solusi IT buatan tim ARKALOKA.
                 </p>
             </div>
 
@@ -93,50 +105,56 @@ function Products() {
                 {/* Sidebar Filter */}
                 <div className="lg:col-span-1 space-y-6">
                     
-                    {/* Search */}
-                    <div className="bg-[#21150F] p-5 rounded-2xl border border-[#3D281C] shadow-md space-y-3">
-                        <h3 className="font-bold text-[#D19A6A] text-xs tracking-widest uppercase">Cari Produk</h3>
-                        <form onSubmit={handleSearchSubmit} className="relative">
+                    {/* Search Bar */}
+                    <div className="bg-[#FFFFFF] p-5 rounded-2xl border border-[#E8CBA6] shadow-sm space-y-3">
+                        <h3 className="font-bold text-[#4E3A2C] text-xs tracking-widest uppercase">Cari Project</h3>
+                        <div className="relative">
                             <input
                                 type="text"
                                 value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                placeholder="Ketik nama produk..."
-                                className="w-full pl-3 pr-10 py-2.5 bg-[#140D09] border border-[#3D281C] rounded-xl text-sm text-[#F5E9DC] placeholder-[#B8A08C] focus:outline-none focus:ring-2 focus:ring-[#B87333] transition-all duration-200"
+                                onChange={handleSearchChange}
+                                placeholder="Ketik nama atau deskripsi..."
+                                className="w-full pl-3 pr-10 py-2.5 bg-[#FBF7F1] border border-[#E8CBA6] rounded-xl text-sm text-[#4E3A2C] placeholder-[#9A8F81]/70 focus:outline-none focus:ring-2 focus:ring-[#8C6A4A] transition-all duration-200"
                             />
-                            <button
-                                type="submit"
-                                className="absolute right-2.5 top-2.5 text-[#B8A08C] hover:text-[#D19A6A] transition-colors duration-200"
-                            >
-                                🔍
-                            </button>
-                        </form>
+                            {search ? (
+                                <button
+                                    onClick={() => handleSearchChange({ target: { value: "" } })}
+                                    className="absolute right-3 top-2.5 text-[#9A8F81] hover:text-[#4E3A2C] text-sm"
+                                >
+                                    ✕
+                                </button>
+                            ) : (
+                                <span className="absolute right-3 top-2.5 text-[#9A8F81] text-sm">
+                                    🔍
+                                </span>
+                            )}
+                        </div>
                     </div>
 
                     {/* Sort */}
-                    <div className="bg-[#21150F] p-5 rounded-2xl border border-[#3D281C] shadow-md space-y-3">
-                        <h3 className="font-bold text-[#D19A6A] text-xs tracking-widest uppercase">Urutkan Harga</h3>
+                    <div className="bg-[#FFFFFF] p-5 rounded-2xl border border-[#E8CBA6] shadow-sm space-y-3">
+                        <h3 className="font-bold text-[#4E3A2C] text-xs tracking-widest uppercase">Urutkan Estimasi</h3>
                         <select
                             value={sort}
                             onChange={(e) => {
                                 setSort(e.target.value);
                                 setPage(1);
                             }}
-                            className="w-full px-3 py-2.5 bg-[#140D09] border border-[#3D281C] rounded-xl text-sm text-[#F5E9DC] focus:outline-none focus:ring-2 focus:ring-[#B87333] transition-all duration-200"
+                            className="w-full px-3 py-2.5 bg-[#FBF7F1] border border-[#E8CBA6] rounded-xl text-sm text-[#4E3A2C] focus:outline-none focus:ring-2 focus:ring-[#8C6A4A] transition-all duration-200"
                         >
                             <option value="">Terbaru (Default)</option>
-                            <option value="asc">Harga: Rendah ke Tinggi</option>
-                            <option value="desc">Harga: Tinggi ke Rendah</option>
+                            <option value="asc">Estimasi: Rendah ke Tinggi</option>
+                            <option value="desc">Estimasi: Tinggi ke Rendah</option>
                         </select>
                     </div>
 
                     {/* Category Filter */}
-                    <div className="bg-[#21150F] p-5 rounded-2xl border border-[#3D281C] shadow-md space-y-3">
-                        <h3 className="font-bold text-[#D19A6A] text-xs tracking-widest uppercase">Kategori</h3>
+                    <div className="bg-[#FFFFFF] p-5 rounded-2xl border border-[#E8CBA6] shadow-sm space-y-3">
+                        <h3 className="font-bold text-[#4E3A2C] text-xs tracking-widest uppercase">Kategori Project</h3>
                         {loadingCategories ? (
                             <div className="space-y-2">
                                 {[...Array(5)].map((_, i) => (
-                                    <div key={i} className="h-8 bg-[#2C1D16] rounded animate-pulse" />
+                                    <div key={i} className="h-8 bg-[#E8CBA6]/30 rounded animate-pulse" />
                                 ))}
                             </div>
                         ) : (
@@ -145,12 +163,12 @@ function Products() {
                                     onClick={() => {
                                         setSelectedCategory("");
                                         setPage(1);
-                                        setSearchParams({ q: search });
+                                        setSearchParams(search ? { q: search } : {});
                                     }}
                                     className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-200 text-left ${
                                         selectedCategory === ""
-                                            ? "bg-[#B87333] text-[#F5E9DC] shadow-md"
-                                            : "bg-[#140D09] text-[#B8A08C] hover:bg-[#2C1D16] hover:text-[#F5E9DC] border border-[#3D281C]"
+                                            ? "bg-[#8C6A4A] text-[#FBF7F1] shadow-sm"
+                                            : "bg-[#FBF7F1] text-[#4E3A2C] hover:bg-[#8C6A4A] hover:text-[#FBF7F1] border border-[#E8CBA6]"
                                     }`}
                                 >
                                     Semua Kategori
@@ -161,12 +179,12 @@ function Products() {
                                         onClick={() => {
                                             setSelectedCategory(cat.slug);
                                             setPage(1);
-                                            setSearchParams({ category: cat.slug, q: search });
+                                            setSearchParams(search ? { category: cat.slug, q: search } : { category: cat.slug });
                                         }}
                                         className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-200 text-left ${
                                             selectedCategory === cat.slug
-                                                ? "bg-[#B87333] text-[#F5E9DC] shadow-md"
-                                                : "bg-[#140D09] text-[#B8A08C] hover:bg-[#2C1D16] hover:text-[#F5E9DC] border border-[#3D281C]"
+                                                ? "bg-[#8C6A4A] text-[#FBF7F1] shadow-sm"
+                                                : "bg-[#FBF7F1] text-[#4E3A2C] hover:bg-[#8C6A4A] hover:text-[#FBF7F1] border border-[#E8CBA6]"
                                         }`}
                                     >
                                         {cat.nama_kategori}
@@ -177,12 +195,14 @@ function Products() {
                     </div>
 
                     {/* Reset Button */}
-                    <button
-                        onClick={handleResetFilters}
-                        className="w-full py-2.5 bg-[#2C1D16] hover:bg-[#3D281C] border border-[#3D281C] text-[#B8A08C] hover:text-[#F5E9DC] font-semibold text-xs rounded-xl transition-all duration-200"
-                    >
-                        Hapus Semua Filter
-                    </button>
+                    {(search || selectedCategory || sort) && (
+                        <button
+                            onClick={handleResetFilters}
+                            className="w-full py-2.5 bg-[#8C6A4A] hover:bg-[#4E3A2C] border border-transparent text-[#FBF7F1] font-bold text-xs rounded-xl transition-all duration-200 shadow-sm"
+                        >
+                            Hapus Filter
+                        </button>
+                    )}
 
                 </div>
 
@@ -191,78 +211,53 @@ function Products() {
                     {loading ? (
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {[...Array(6)].map((_, i) => (
-                                <div key={i} className="flex flex-col bg-[#21150F] rounded-2xl border border-[#3D281C] overflow-hidden h-96 animate-pulse">
-                                    <div className="aspect-video bg-[#2C1D16]" />
+                                <div key={i} className="flex flex-col bg-[#FFFFFF] rounded-2xl border border-[#E8CBA6] overflow-hidden h-96 animate-pulse">
+                                    <div className="aspect-video bg-[#E8CBA6]/30" />
                                     <div className="p-5 space-y-4 flex-grow">
-                                        <div className="h-5 bg-[#2C1D16] rounded w-2/3" />
-                                        <div className="h-4 bg-[#2C1D16] rounded w-1/3" />
+                                        <div className="h-5 bg-[#E8CBA6]/30 rounded w-2/3" />
+                                        <div className="h-4 bg-[#E8CBA6]/30 rounded w-1/3" />
                                         <div className="space-y-2 pt-2 flex-grow">
-                                            <div className="h-3 bg-[#2C1D16] rounded" />
-                                            <div className="h-3 bg-[#2C1D16] rounded w-5/6" />
+                                            <div className="h-3 bg-[#E8CBA6]/30 rounded" />
+                                            <div className="h-3 bg-[#E8CBA6]/30 rounded w-5/6" />
                                         </div>
-                                        <div className="h-10 bg-[#2C1D16] rounded-xl pt-2" />
+                                        <div className="h-10 bg-[#E8CBA6]/30 rounded-xl pt-2" />
                                     </div>
                                 </div>
                             ))}
                         </div>
                     ) : error ? (
-                        <div className="bg-red-950/40 border border-red-800/50 rounded-2xl p-6 text-center text-red-400">
+                        <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center text-red-700 font-medium">
                             {error}
                         </div>
-                    ) : products.length === 0 ? (
-                        <div className="bg-[#21150F] rounded-2xl p-16 text-center border border-[#3D281C] shadow-md space-y-4">
+                    ) : filteredProducts.length === 0 ? (
+                        <div className="bg-[#FFFFFF] rounded-2xl p-16 text-center border border-[#E8CBA6] shadow-sm space-y-4">
                             <span className="text-4xl">🔍</span>
-                            <h3 className="font-bold text-[#F5E9DC] text-lg">Produk tidak ditemukan</h3>
-                            <p className="text-[#B8A08C] max-w-sm mx-auto text-sm">
-                                Coba cari dengan kata kunci lain atau gunakan kategori berbeda.
+                            <h3 className="font-bold text-[#4E3A2C] text-lg">Tidak ada project ditemukan</h3>
+                            <p className="text-[#9A8F81] max-w-sm mx-auto text-sm">
+                                Coba cari dengan kata kunci lain atau pilih kategori project yang berbeda.
                             </p>
+                            {search && (
+                                <button
+                                    onClick={() => handleSearchChange({ target: { value: "" } })}
+                                    className="px-5 py-2 bg-[#8C6A4A] text-[#FBF7F1] text-xs font-semibold rounded-xl hover:bg-[#4E3A2C] transition-colors"
+                                >
+                                    Reset Pencarian
+                                </button>
+                            )}
                         </div>
                     ) : (
                         <>
-                            {/* Grid */}
+                            {search && (
+                                <p className="text-xs text-[#9A8F81]">
+                                    Menampilkan {filteredProducts.length} hasil pencarian untuk "{search}"
+                                </p>
+                            )}
+
                             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {products.map((product) => (
+                                {filteredProducts.map((product) => (
                                     <ProductCard key={product.id} product={product} />
                                 ))}
                             </div>
-
-                            {/* Pagination Controls */}
-                            {pagination.totalPages > 1 && (
-                                <div className="flex items-center justify-center space-x-2 pt-6">
-                                    <button
-                                        onClick={() => setPage(p => Math.max(p - 1, 1))}
-                                        disabled={page === 1}
-                                        className="px-3.5 py-2 rounded-xl text-sm font-semibold border border-[#3D281C] bg-[#21150F] text-[#B8A08C] hover:text-[#F5E9DC] hover:bg-[#2C1D16] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
-                                    >
-                                        Sebelumnya
-                                    </button>
-                                    
-                                    {[...Array(pagination.totalPages)].map((_, index) => {
-                                        const p = index + 1;
-                                        return (
-                                            <button
-                                                key={p}
-                                                onClick={() => setPage(p)}
-                                                className={`h-9 w-9 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                                                    page === p
-                                                        ? "bg-[#B87333] text-[#F5E9DC] shadow-md"
-                                                        : "border border-[#3D281C] bg-[#21150F] text-[#B8A08C] hover:bg-[#2C1D16] hover:text-[#F5E9DC]"
-                                                }`}
-                                            >
-                                                {p}
-                                            </button>
-                                        );
-                                    })}
-
-                                    <button
-                                        onClick={() => setPage(p => Math.min(p + 1, pagination.totalPages))}
-                                        disabled={page === pagination.totalPages}
-                                        className="px-3.5 py-2 rounded-xl text-sm font-semibold border border-[#3D281C] bg-[#21150F] text-[#B8A08C] hover:text-[#F5E9DC] hover:bg-[#2C1D16] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
-                                    >
-                                        Berikutnya
-                                    </button>
-                                </div>
-                            )}
                         </>
                     )}
                 </div>

@@ -10,23 +10,25 @@ import {
 import { getCategories } from "../../services/categoryService";
 
 const formatRupiah = (n) =>
-    new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(n);
+    n !== null && n !== undefined && !isNaN(n)
+        ? new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(n)
+        : "Belum tersedia";
 
 const formatDate = (d) =>
     d ? new Date(d).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }) : "—";
 
 function Modal({ title, subtitle, onClose, children }) {
     return (
-        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/70 backdrop-blur-md p-4 overflow-y-auto">
-            <div className="bg-[#21150F] border border-[#3D281C] text-[#F5E9DC] rounded-3xl shadow-2xl w-full max-w-2xl my-8">
-                <div className="flex items-center justify-between px-6 py-5 border-b border-[#3D281C]">
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-md p-4 overflow-y-auto">
+            <div className="bg-[#FFFFFF] border border-[#E8CBA6] text-[#4E3A2C] rounded-3xl shadow-xl w-full max-w-2xl my-8">
+                <div className="flex items-center justify-between px-6 py-5 border-b border-[#E8CBA6]">
                     <div>
-                        <h2 className="font-bold text-[#F5E9DC] text-lg">{title}</h2>
-                        {subtitle && <p className="text-xs text-[#B8A08C] mt-0.5">{subtitle}</p>}
+                        <h2 className="font-bold text-[#4E3A2C] text-lg">{title}</h2>
+                        {subtitle && <p className="text-xs text-[#9A8F81] mt-0.5">{subtitle}</p>}
                     </div>
                     <button
                         onClick={onClose}
-                        className="text-[#B8A08C] hover:text-[#F5E9DC] text-xl w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[#2C1D16] transition-colors"
+                        className="text-[#9A8F81] hover:text-[#4E3A2C] text-xl w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[#FBF7F1] transition-colors"
                     >
                         ✕
                     </button>
@@ -42,7 +44,7 @@ function SkeletonRow() {
         <tr className="animate-pulse">
             {[...Array(7)].map((_, i) => (
                 <td key={i} className="px-4 py-4">
-                    <div className="h-4 bg-[#2C1D16] rounded w-3/4" />
+                    <div className="h-4 bg-[#E8CBA6]/30 rounded w-3/4" />
                 </td>
             ))}
         </tr>
@@ -85,10 +87,10 @@ function AdminProductsPage() {
                 page,
                 limit: LIMIT,
             });
-            setProducts(data.products);
-            setPagination(data.pagination);
+            setProducts(data.products || []);
+            setPagination(data.pagination || { totalProducts: 0, totalPages: 1, currentPage: 1 });
         } catch (err) {
-            setError(err.message || "Gagal memuat produk.");
+            setError(err.message || "Gagal memuat project.");
         } finally {
             setLoading(false);
         }
@@ -113,11 +115,11 @@ function AdminProductsPage() {
         setFormLoading(true);
         try {
             await createProduct(formData);
-            showToast("success", "Produk berhasil ditambahkan!");
+            showToast("success", "Project berhasil ditambahkan!");
             setShowAddModal(false);
             loadProducts();
         } catch (err) {
-            showToast("error", err.message || "Gagal menambahkan produk.");
+            showToast("error", err.message || "Gagal menambahkan project.");
         } finally {
             setFormLoading(false);
         }
@@ -128,11 +130,11 @@ function AdminProductsPage() {
         setFormLoading(true);
         try {
             await updateProduct(editProduct.id, formData);
-            showToast("success", "Produk berhasil diperbarui!");
+            showToast("success", "Project berhasil diperbarui!");
             setEditProduct(null);
             loadProducts();
         } catch (err) {
-            showToast("error", err.message || "Gagal mengupdate produk.");
+            showToast("error", err.message || "Gagal mengupdate project.");
         } finally {
             setFormLoading(false);
         }
@@ -147,7 +149,7 @@ function AdminProductsPage() {
             setDeleteTarget(null);
             loadProducts();
         } catch (err) {
-            showToast("error", err.message || "Gagal menghapus produk.");
+            showToast("error", err.message || "Gagal menghapus project.");
         } finally {
             setFormLoading(false);
         }
@@ -155,7 +157,7 @@ function AdminProductsPage() {
 
     return (
         <AdminLayout>
-            <div className="space-y-6 text-[#F5E9DC]">
+            <div className="space-y-6 text-[#4E3A2C]">
 
                 {toast && (
                     <div
@@ -172,33 +174,33 @@ function AdminProductsPage() {
                 {/* Page Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
-                        <h1 className="text-2xl font-black text-[#F5E9DC]">Manajemen Produk</h1>
-                        <p className="text-sm text-[#B8A08C] mt-0.5">
-                            {pagination.totalProducts} produk terdaftar
+                        <h1 className="text-2xl font-black text-[#4E3A2C]">Manajemen Project</h1>
+                        <p className="text-sm text-[#9A8F81] mt-0.5 font-medium">
+                            {pagination.totalProducts} project terdaftar
                         </p>
                     </div>
                     <button
                         onClick={() => { setEditProduct(null); setShowAddModal(true); }}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#B87333] hover:bg-[#A05E22] text-[#F5E9DC] font-semibold text-sm rounded-xl shadow-md transition-colors"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#8C6A4A] hover:bg-[#4E3A2C] text-[#FBF7F1] font-bold text-sm rounded-xl shadow-sm transition-colors"
                     >
-                        <span className="text-base">+</span> Tambah Produk
+                        <span className="text-base">+</span> Tambah Project
                     </button>
                 </div>
 
                 {/* Search & Filter Bar */}
-                <div className="bg-[#21150F] rounded-2xl border border-[#3D281C] shadow-md p-4">
+                <div className="bg-[#FFFFFF] rounded-2xl border border-[#E8CBA6] shadow-sm p-4">
                     <div className="flex flex-col sm:flex-row gap-3">
                         <form onSubmit={handleSearchSubmit} className="flex flex-1 gap-2">
                             <input
                                 type="text"
                                 value={searchInput}
                                 onChange={(e) => setSearchInput(e.target.value)}
-                                placeholder="Cari nama produk..."
-                                className="flex-1 border border-[#3D281C] bg-[#140D09] text-[#F5E9DC] placeholder-[#B8A08C]/50 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#B87333]"
+                                placeholder="Cari nama project..."
+                                className="flex-1 border border-[#E8CBA6] bg-[#FBF7F1] text-[#4E3A2C] placeholder-[#9A8F81]/60 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8C6A4A]"
                             />
                             <button
                                 type="submit"
-                                className="px-4 py-2 bg-[#B87333] hover:bg-[#A05E22] text-[#F5E9DC] text-sm font-semibold rounded-xl transition-colors"
+                                className="px-4 py-2 bg-[#8C6A4A] hover:bg-[#4E3A2C] text-[#FBF7F1] text-sm font-bold rounded-xl transition-colors shadow-sm"
                             >
                                 Cari
                             </button>
@@ -207,7 +209,7 @@ function AdminProductsPage() {
                         <select
                             value={categoryFilter}
                             onChange={(e) => setCategoryFilter(e.target.value)}
-                            className="border border-[#3D281C] rounded-xl px-4 py-2 text-sm bg-[#140D09] text-[#F5E9DC] focus:outline-none focus:ring-2 focus:ring-[#B87333]"
+                            className="border border-[#E8CBA6] rounded-xl px-4 py-2 text-sm bg-[#FBF7F1] text-[#4E3A2C] focus:outline-none focus:ring-2 focus:ring-[#8C6A4A]"
                         >
                             <option value="">Semua Kategori</option>
                             {categories.map((c) => (
@@ -220,7 +222,7 @@ function AdminProductsPage() {
                         <select
                             value={sort}
                             onChange={(e) => setSort(e.target.value)}
-                            className="border border-[#3D281C] rounded-xl px-4 py-2 text-sm bg-[#140D09] text-[#F5E9DC] focus:outline-none focus:ring-2 focus:ring-[#B87333]"
+                            className="border border-[#E8CBA6] rounded-xl px-4 py-2 text-sm bg-[#FBF7F1] text-[#4E3A2C] focus:outline-none focus:ring-2 focus:ring-[#8C6A4A]"
                         >
                             <option value="">Terbaru</option>
                             <option value="asc">Harga: Terendah</option>
@@ -230,7 +232,7 @@ function AdminProductsPage() {
                         {(search || categoryFilter || sort) && (
                             <button
                                 onClick={() => { setSearch(""); setSearchInput(""); setCategoryFilter(""); setSort(""); }}
-                                className="px-4 py-2 text-sm text-[#B8A08C] hover:text-[#F5E9DC] border border-[#3D281C] bg-[#140D09] rounded-xl hover:bg-[#2C1D16] transition-colors"
+                                className="px-4 py-2 text-sm text-[#4E3A2C] hover:text-[#FBF7F1] border border-[#E8CBA6] bg-[#FBF7F1] hover:bg-[#8C6A4A] font-bold rounded-xl transition-colors"
                             >
                                 Reset
                             </button>
@@ -239,37 +241,37 @@ function AdminProductsPage() {
                 </div>
 
                 {error && (
-                    <div className="bg-red-950/40 border border-red-800/50 text-red-300 rounded-xl px-5 py-3 text-sm">
+                    <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-5 py-3 text-sm">
                         ⚠️ {error}
                     </div>
                 )}
 
                 {/* Products Table */}
-                <div className="bg-[#21150F] rounded-2xl border border-[#3D281C] shadow-md overflow-hidden">
+                <div className="bg-[#FFFFFF] rounded-2xl border border-[#E8CBA6] shadow-sm overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm">
                             <thead>
-                                <tr className="bg-[#140D09] border-b border-[#3D281C] text-xs font-semibold text-[#B8A08C] uppercase tracking-wider">
+                                <tr className="bg-[#FBF7F1] border-b border-[#E8CBA6] text-xs font-bold text-[#4E3A2C] uppercase tracking-wider">
                                     <th className="px-4 py-3 text-left w-10">ID</th>
-                                    <th className="px-4 py-3 text-left">Produk</th>
+                                    <th className="px-4 py-3 text-left">Project</th>
                                     <th className="px-4 py-3 text-left">Kategori</th>
-                                    <th className="px-4 py-3 text-left">Harga</th>
+                                    <th className="px-4 py-3 text-left">Estimasi Biaya</th>
                                     <th className="px-4 py-3 text-center">Status</th>
                                     <th className="px-4 py-3 text-left">Dibuat</th>
                                     <th className="px-4 py-3 text-center">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-[#3D281C]">
+                            <tbody className="divide-y divide-[#E8CBA6]">
                                 {loading ? (
                                     [...Array(LIMIT)].map((_, i) => <SkeletonRow key={i} />)
                                 ) : products.length === 0 ? (
                                     <tr>
                                         <td colSpan={7} className="px-4 py-16 text-center">
                                             <span className="text-4xl block mb-3">📦</span>
-                                            <p className="text-[#B8A08C] font-medium">
+                                            <p className="text-[#9A8F81] font-bold">
                                                 {search || categoryFilter
-                                                    ? "Produk tidak ditemukan. Coba filter lain."
-                                                    : "Belum ada produk. Tambahkan produk pertama!"}
+                                                    ? "Project tidak ditemukan. Coba filter lain."
+                                                    : "Belum ada project. Tambahkan project pertama!"}
                                             </p>
                                         </td>
                                     </tr>
@@ -277,33 +279,30 @@ function AdminProductsPage() {
                                     products.map((product) => (
                                         <tr
                                             key={product.id}
-                                            className="hover:bg-[#2C1D16] transition-colors duration-100"
+                                            className="hover:bg-[#FBF7F1]/60 transition-colors duration-100"
                                         >
-                                            <td className="px-4 py-3 text-[#B8A08C] text-xs font-mono">
+                                            <td className="px-4 py-3 text-[#9A8F81] text-xs font-mono">
                                                 #{product.id}
                                             </td>
 
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-3">
-                                                    {product.image ? (
-                                                        <img
-                                                            src={product.image}
-                                                            alt={product.name}
-                                                            className="w-10 h-10 object-cover rounded-lg border border-[#3D281C] flex-shrink-0"
-                                                            onError={(e) => { e.target.style.display = "none"; }}
-                                                        />
-                                                    ) : (
-                                                        <div className="w-10 h-10 bg-[#140D09] border border-[#3D281C] rounded-lg flex-shrink-0 flex items-center justify-center text-[#B8A08C] text-lg">
-                                                            🖼
-                                                        </div>
-                                                    )}
+                                                    <img
+                                                        src={product.image || product.gambar || "/logo.png"}
+                                                        alt={product.name || product.nama_produk || "ARKALOKA Project"}
+                                                        className="w-10 h-10 object-cover rounded-lg border border-[#E8CBA6] flex-shrink-0 bg-[#FBF7F1]"
+                                                        onError={(e) => {
+                                                            e.currentTarget.onerror = null;
+                                                            e.currentTarget.src = "/logo.png";
+                                                        }}
+                                                    />
                                                     <div>
-                                                        <p className="font-semibold text-[#F5E9DC] line-clamp-1">
-                                                            {product.name}
+                                                        <p className="font-bold text-[#4E3A2C] line-clamp-1">
+                                                            {product.name || product.nama_produk}
                                                         </p>
-                                                        {product.description && (
-                                                            <p className="text-xs text-[#B8A08C] line-clamp-1 mt-0.5">
-                                                                {product.description}
+                                                        {(product.description || product.deskripsi) && (
+                                                            <p className="text-xs text-[#9A8F81] line-clamp-1 mt-0.5">
+                                                                {product.description || product.deskripsi}
                                                             </p>
                                                         )}
                                                     </div>
@@ -311,28 +310,28 @@ function AdminProductsPage() {
                                             </td>
 
                                             <td className="px-4 py-3">
-                                                <span className="inline-block bg-[#140D09] border border-[#3D281C] text-[#D19A6A] text-xs font-semibold px-2 py-1 rounded-md">
-                                                    {product.category || "—"}
+                                                <span className="inline-block bg-[#FBF7F1] border border-[#E8CBA6] text-[#8C6A4A] text-xs font-bold px-2 py-1 rounded-md">
+                                                    {product.category || product.kategori || "—"}
                                                 </span>
                                             </td>
 
-                                            <td className="px-4 py-3 font-semibold text-[#D19A6A]">
-                                                {formatRupiah(product.price)}
+                                            <td className="px-4 py-3 font-bold text-[#8C6A4A]">
+                                                {formatRupiah(product.price ?? product.harga)}
                                             </td>
 
                                             <td className="px-4 py-3 text-center">
                                                 <span
-                                                    className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${
+                                                    className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold ${
                                                         product.status === "active"
-                                                            ? "bg-emerald-950/80 border border-emerald-800 text-emerald-300"
-                                                            : "bg-red-950/80 border border-red-800 text-red-300"
+                                                            ? "bg-emerald-50 border border-emerald-200 text-emerald-800"
+                                                            : "bg-red-50 border border-red-200 text-red-800"
                                                     }`}
                                                 >
                                                     {product.status === "active" ? "Aktif" : "Non-aktif"}
                                                 </span>
                                             </td>
 
-                                            <td className="px-4 py-3 text-[#B8A08C] text-xs">
+                                            <td className="px-4 py-3 text-[#9A8F81] text-xs font-medium">
                                                 {formatDate(product.created_at)}
                                             </td>
 
@@ -340,13 +339,13 @@ function AdminProductsPage() {
                                                 <div className="flex items-center justify-center gap-1.5">
                                                     <button
                                                         onClick={() => { setShowAddModal(false); setEditProduct(product); }}
-                                                        className="px-3 py-1.5 text-xs font-semibold text-[#D19A6A] bg-[#140D09] border border-[#3D281C] hover:bg-[#2C1D16] rounded-lg transition-colors"
+                                                        className="px-3 py-1.5 text-xs font-bold text-[#4E3A2C] bg-[#FBF7F1] border border-[#E8CBA6] hover:bg-[#8C6A4A] hover:text-[#FBF7F1] rounded-lg transition-colors"
                                                     >
                                                         Edit
                                                     </button>
                                                     <button
-                                                        onClick={() => setDeleteTarget({ id: product.id, name: product.name })}
-                                                        className="px-3 py-1.5 text-xs font-semibold text-red-400 bg-red-950/40 border border-red-800/40 hover:bg-red-900/60 rounded-lg transition-colors"
+                                                        onClick={() => setDeleteTarget({ id: product.id, name: product.name || product.nama_produk })}
+                                                        className="px-3 py-1.5 text-xs font-bold text-red-700 bg-red-50 border border-red-200 hover:bg-red-800 hover:text-white rounded-lg transition-colors"
                                                     >
                                                         Hapus
                                                     </button>
@@ -361,16 +360,16 @@ function AdminProductsPage() {
 
                     {/* Pagination */}
                     {pagination.totalPages > 1 && (
-                        <div className="px-6 py-4 border-t border-[#3D281C] flex items-center justify-between">
-                            <p className="text-xs text-[#B8A08C]">
+                        <div className="px-6 py-4 border-t border-[#E8CBA6] flex items-center justify-between">
+                            <p className="text-xs text-[#9A8F81] font-medium">
                                 Menampilkan {((page - 1) * LIMIT) + 1}–{Math.min(page * LIMIT, pagination.totalProducts)} dari{" "}
-                                {pagination.totalProducts} produk
+                                {pagination.totalProducts} project
                             </p>
                             <div className="flex items-center gap-1.5">
                                 <button
                                     onClick={() => setPage((p) => Math.max(p - 1, 1))}
                                     disabled={page === 1}
-                                    className="px-3 py-1.5 text-xs font-semibold border border-[#3D281C] bg-[#140D09] text-[#B8A08C] hover:text-[#F5E9DC] hover:bg-[#2C1D16] disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors"
+                                    className="px-3 py-1.5 text-xs font-bold border border-[#E8CBA6] bg-[#FBF7F1] text-[#4E3A2C] hover:bg-[#8C6A4A] hover:text-[#FBF7F1] disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors"
                                 >
                                     ← Prev
                                 </button>
@@ -387,8 +386,8 @@ function AdminProductsPage() {
                                                 onClick={() => setPage(p)}
                                                 className={`w-8 h-8 text-xs font-semibold rounded-lg transition-colors ${
                                                     page === p
-                                                        ? "bg-[#B87333] text-[#F5E9DC] shadow-sm"
-                                                        : "border border-[#3D281C] bg-[#140D09] text-[#B8A08C] hover:bg-[#2C1D16] hover:text-[#F5E9DC]"
+                                                        ? "bg-[#8C6A4A] text-[#FBF7F1] shadow-sm"
+                                                        : "border border-[#E8CBA6] bg-[#FBF7F1] text-[#4E3A2C] hover:bg-[#8C6A4A] hover:text-[#FBF7F1]"
                                                 }`}
                                             >
                                                 {p}
@@ -396,14 +395,14 @@ function AdminProductsPage() {
                                         );
                                     }
                                     if (p === page - 2 || p === page + 2) {
-                                        return <span key={p} className="text-[#B8A08C] text-xs px-1">…</span>;
+                                        return <span key={p} className="text-[#9A8F81] text-xs px-1">…</span>;
                                     }
                                     return null;
                                 })}
                                 <button
                                     onClick={() => setPage((p) => Math.min(p + 1, pagination.totalPages))}
                                     disabled={page === pagination.totalPages}
-                                    className="px-3 py-1.5 text-xs font-semibold border border-[#3D281C] bg-[#140D09] text-[#B8A08C] hover:text-[#F5E9DC] hover:bg-[#2C1D16] disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors"
+                                    className="px-3 py-1.5 text-xs font-bold border border-[#E8CBA6] bg-[#FBF7F1] text-[#4E3A2C] hover:bg-[#8C6A4A] hover:text-[#FBF7F1] disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors"
                                 >
                                     Next →
                                 </button>
@@ -417,8 +416,8 @@ function AdminProductsPage() {
             {/* Modals */}
             {showAddModal && (
                 <Modal
-                    title="Tambah Produk Baru"
-                    subtitle="Isi formulir di bawah ini untuk menambahkan produk ke katalog ARKALOKA"
+                    title="Tambah Project Baru"
+                    subtitle="Isi formulir di bawah ini untuk menambahkan project ke katalog ARKALOKA"
                     onClose={() => setShowAddModal(false)}
                 >
                     <ProductForm
@@ -431,8 +430,8 @@ function AdminProductsPage() {
 
             {editProduct && (
                 <Modal
-                    title={`Edit Produk — #${editProduct.id}`}
-                    subtitle={`Mengubah data "${editProduct.name}"`}
+                    title={`Edit Project — #${editProduct.id}`}
+                    subtitle={`Mengubah data "${editProduct.name || editProduct.nama_produk}"`}
                     onClose={() => setEditProduct(null)}
                 >
                     <ProductForm
@@ -445,26 +444,26 @@ function AdminProductsPage() {
             )}
 
             {deleteTarget && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4">
-                    <div className="bg-[#21150F] border border-[#3D281C] text-[#F5E9DC] rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center space-y-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-md p-4">
+                    <div className="bg-[#FFFFFF] border border-[#E8CBA6] text-[#4E3A2C] rounded-2xl shadow-xl max-w-sm w-full p-6 text-center space-y-4">
                         <span className="text-4xl block">🗑️</span>
-                        <h3 className="font-bold text-[#F5E9DC] text-lg">Hapus Produk?</h3>
-                        <p className="text-xs text-[#B8A08C]">
+                        <h3 className="font-bold text-[#4E3A2C] text-lg">Hapus Project?</h3>
+                        <p className="text-xs text-[#9A8F81]">
                             Apakah Anda yakin ingin menghapus{" "}
-                            <span className="font-semibold text-[#F5E9DC]">"{deleteTarget.name}"</span>? Action ini tidak dapat dibatalkan.
+                            <span className="font-bold text-[#4E3A2C]">"{deleteTarget.name}"</span>? Action ini tidak dapat dibatalkan.
                         </p>
                         <div className="flex gap-3 pt-2">
                             <button
                                 onClick={() => setDeleteTarget(null)}
                                 disabled={formLoading}
-                                className="flex-1 py-2.5 bg-[#140D09] border border-[#3D281C] text-[#B8A08C] hover:text-[#F5E9DC] font-semibold text-sm rounded-xl transition-colors"
+                                className="flex-1 py-2.5 bg-[#FBF7F1] border border-[#E8CBA6] text-[#4E3A2C] hover:bg-[#E8CBA6]/40 hover:text-[#4E3A2C] font-bold text-sm rounded-xl transition-colors"
                             >
                                 Batal
                             </button>
                             <button
                                 onClick={handleDeleteConfirm}
                                 disabled={formLoading}
-                                className="flex-1 py-2.5 bg-red-800 hover:bg-red-700 disabled:opacity-50 text-white font-semibold text-sm rounded-xl transition-colors"
+                                className="flex-1 py-2.5 bg-red-800 hover:bg-red-700 disabled:opacity-50 text-white font-bold text-sm rounded-xl transition-colors"
                             >
                                 {formLoading ? "Menghapus..." : "Ya, Hapus"}
                             </button>

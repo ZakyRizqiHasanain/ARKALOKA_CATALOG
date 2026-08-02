@@ -17,22 +17,24 @@ import OverviewCard from "../components/admin/OverviewCard";
 import { getDashboardStats, getAdminData } from "../services/adminService";
 
 const CHART_COLORS = [
-    "#B87333",
-    "#D19A6A",
-    "#E5B27F",
-    "#10b981",
-    "#f59e0b",
-    "#3b82f6",
-    "#ec4899",
-    "#8b5cf6",
+    "#8C6A4A",
+    "#C79E72",
+    "#E8CBA6",
+    "#4E3A2C",
 ];
 
-const formatRupiah = (number) =>
-    new Intl.NumberFormat("id-ID", {
+const safeFormatRupiah = (val) => {
+    if (val === null || val === undefined || isNaN(val) || val === "") {
+        return "Belum tersedia";
+    }
+    const num = Number(val);
+    if (isNaN(num)) return "Belum tersedia";
+    return new Intl.NumberFormat("id-ID", {
         style: "currency",
         currency: "IDR",
         minimumFractionDigits: 0,
-    }).format(number);
+    }).format(num);
+};
 
 const formatDate = (dateStr) => {
     if (!dateStr) return "—";
@@ -46,9 +48,9 @@ const formatDate = (dateStr) => {
 const CustomBarTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
         return (
-            <div className="bg-[#21150F] border border-[#3D281C] rounded-xl shadow-lg px-4 py-3 text-sm text-[#F5E9DC]">
-                <p className="font-semibold text-[#F5E9DC] mb-1">{label}</p>
-                <p className="text-[#D19A6A] font-bold">{payload[0].value} produk</p>
+            <div className="bg-[#FBF7F1] border border-[#E8CBA6] rounded-xl shadow-lg px-4 py-3 text-sm text-[#4E3A2C]">
+                <p className="font-bold text-[#4E3A2C] mb-1">{label}</p>
+                <p className="text-[#8C6A4A] font-bold">{payload[0].value} project</p>
             </div>
         );
     }
@@ -58,9 +60,9 @@ const CustomBarTooltip = ({ active, payload, label }) => {
 const CustomPieTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
         return (
-            <div className="bg-[#21150F] border border-[#3D281C] rounded-xl shadow-lg px-4 py-3 text-sm text-[#F5E9DC]">
-                <p className="font-semibold text-[#F5E9DC]">{payload[0].name}</p>
-                <p className="text-[#D19A6A] font-bold">{payload[0].value} produk</p>
+            <div className="bg-[#FBF7F1] border border-[#E8CBA6] rounded-xl shadow-lg px-4 py-3 text-sm text-[#4E3A2C]">
+                <p className="font-bold text-[#4E3A2C]">{payload[0].name}</p>
+                <p className="text-[#8C6A4A] font-bold">{payload[0].value} project</p>
             </div>
         );
     }
@@ -69,11 +71,11 @@ const CustomPieTooltip = ({ active, payload }) => {
 
 function SkeletonCard() {
     return (
-        <div className="bg-[#21150F] rounded-2xl border border-[#3D281C] shadow-sm p-6 flex items-start gap-4 animate-pulse">
-            <div className="w-12 h-12 rounded-xl bg-[#2C1D16] flex-shrink-0" />
+        <div className="bg-[#FFFFFF] rounded-2xl border border-[#E8CBA6] shadow-sm p-6 flex items-start gap-4 animate-pulse">
+            <div className="w-12 h-12 rounded-xl bg-[#E8CBA6]/30 flex-shrink-0" />
             <div className="flex-1 space-y-3">
-                <div className="h-3 bg-[#2C1D16] rounded w-1/2" />
-                <div className="h-8 bg-[#2C1D16] rounded w-1/3" />
+                <div className="h-3 bg-[#E8CBA6]/30 rounded w-1/2" />
+                <div className="h-8 bg-[#E8CBA6]/30 rounded w-1/3" />
             </div>
         </div>
     );
@@ -100,17 +102,22 @@ function Dashboard() {
             .finally(() => setLoading(false));
     }, []);
 
+    const chartData = (stats?.productsByCategory || stats?.categoryStats || []).map((item) => ({
+        name: item.category || item.category_name || item.name || "Kategori",
+        value: Number(item.total ?? item.product_count ?? item.value ?? 0),
+    }));
+
     if (error) {
         return (
             <AdminLayout>
                 <div className="flex items-center justify-center min-h-[60vh]">
-                    <div className="bg-[#21150F] rounded-2xl border border-red-900/50 shadow-lg p-10 text-center space-y-4 max-w-md">
+                    <div className="bg-[#FFFFFF] rounded-2xl border border-red-200 shadow-lg p-10 text-center space-y-4 max-w-md">
                         <span className="text-5xl">⚠️</span>
-                        <h2 className="text-xl font-bold text-[#F5E9DC]">Gagal Memuat Dashboard</h2>
-                        <p className="text-red-400 text-sm">{error}</p>
+                        <h2 className="text-xl font-bold text-[#4E3A2C]">Gagal Memuat Dashboard</h2>
+                        <p className="text-red-700 text-sm">{error}</p>
                         <button
                             onClick={() => window.location.reload()}
-                            className="mt-4 px-5 py-2 bg-[#B87333] hover:bg-[#A05E22] text-[#F5E9DC] text-sm font-semibold rounded-lg transition-colors"
+                            className="mt-4 px-5 py-2 bg-[#8C6A4A] hover:bg-[#4E3A2C] text-[#FBF7F1] text-sm font-semibold rounded-lg transition-colors"
                         >
                             Coba Lagi
                         </button>
@@ -122,23 +129,23 @@ function Dashboard() {
 
     return (
         <AdminLayout>
-            <div className="space-y-8 text-[#F5E9DC]">
+            <div className="space-y-8 text-[#4E3A2C]">
 
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <div>
-                        <h1 className="text-2xl font-black text-[#F5E9DC]">Dashboard ARKALOKA</h1>
-                        <p className="text-sm text-[#B8A08C] mt-0.5">
+                        <h1 className="text-2xl font-black text-[#4E3A2C]">Dashboard ARKALOKA</h1>
+                        <p className="text-sm text-[#9A8F81] mt-0.5">
                             Selamat datang kembali
                             {admin?.name ? (
-                                <span className="font-semibold text-[#D19A6A]"> {admin.name}</span>
+                                <span className="font-bold text-[#4E3A2C]"> {admin.name}</span>
                             ) : (
                                 ", Admin"
                             )}
                             👋
                         </p>
                     </div>
-                    <span className="text-xs text-[#B8A08C] bg-[#21150F] border border-[#3D281C] rounded-full px-3 py-1 self-start sm:self-center">
+                    <span className="text-xs text-[#8C6A4A] bg-[#FFFFFF] border border-[#E8CBA6] rounded-full px-3 py-1 font-semibold self-start sm:self-center">
                         {new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
                     </span>
                 </div>
@@ -158,7 +165,7 @@ function Dashboard() {
                                 value={stats?.totalProducts}
                                 icon="📦"
                                 accentColor="brand"
-                                description="Seluruh produk dalam katalog"
+                                description="Seluruh project terdaftar"
                             />
                             <OverviewCard
                                 title="Total Kategori"
@@ -181,38 +188,38 @@ function Dashboard() {
                 {/* Charts */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Bar chart */}
-                    <div className="lg:col-span-2 bg-[#21150F] rounded-2xl border border-[#3D281C] shadow-md p-6 space-y-4">
+                    <div className="lg:col-span-2 bg-[#FFFFFF] rounded-2xl border border-[#E8CBA6] shadow-sm p-6 space-y-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <h3 className="font-bold text-[#F5E9DC]">Produk per Kategori</h3>
-                                <p className="text-xs text-[#B8A08C]">Distribusi jumlah produk berdasarkan kategori</p>
+                                <h3 className="font-bold text-[#4E3A2C]">Project per Kategori</h3>
+                                <p className="text-xs text-[#9A8F81]">Distribusi jumlah project berdasarkan kategori</p>
                             </div>
-                            <span className="text-xs font-semibold bg-[#140D09] border border-[#3D281C] text-[#D19A6A] px-2.5 py-1 rounded-lg">
+                            <span className="text-xs font-bold bg-[#FBF7F1] border border-[#E8CBA6] text-[#8C6A4A] px-2.5 py-1 rounded-lg">
                                 Bar Chart
                             </span>
                         </div>
 
                         {loading ? (
-                            <div className="h-64 bg-[#2C1D16] rounded-xl animate-pulse" />
-                        ) : !stats?.categoryStats || stats.categoryStats.length === 0 ? (
-                            <div className="h-64 flex items-center justify-center text-[#B8A08C] text-sm">
-                                Belum ada data kategori.
+                            <div className="h-64 bg-[#E8CBA6]/30 rounded-xl animate-pulse" />
+                        ) : chartData.length === 0 ? (
+                            <div className="h-64 flex items-center justify-center text-[#9A8F81] text-sm">
+                                Belum ada data kategori
                             </div>
                         ) : (
                             <div className="h-64">
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={stats.categoryStats} margin={{ top: 10, right: 10, left: -20, bottom: 20 }}>
-                                        <CartesianGrid strokeDasharray="3 3" stroke="#3D281C" />
+                                    <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 20 }}>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="#E8CBA6" strokeOpacity={0.6} />
                                         <XAxis
-                                            dataKey="category_name"
-                                            tick={{ fill: "#B8A08C", fontSize: 11 }}
+                                            dataKey="name"
+                                            tick={{ fill: "#4E3A2C", fontSize: 11 }}
                                             angle={-15}
                                             textAnchor="end"
                                         />
-                                        <YAxis tick={{ fill: "#B8A08C", fontSize: 11 }} allowDecimals={false} />
+                                        <YAxis tick={{ fill: "#4E3A2C", fontSize: 11 }} allowDecimals={false} />
                                         <Tooltip content={<CustomBarTooltip />} />
-                                        <Bar dataKey="product_count" radius={[8, 8, 0, 0]}>
-                                            {stats.categoryStats.map((entry, index) => (
+                                        <Bar dataKey="value" radius={[8, 8, 0, 0]}>
+                                            {chartData.map((entry, index) => (
                                                 <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                                             ))}
                                         </Bar>
@@ -223,16 +230,16 @@ function Dashboard() {
                     </div>
 
                     {/* Pie chart */}
-                    <div className="bg-[#21150F] rounded-2xl border border-[#3D281C] shadow-md p-6 space-y-4">
+                    <div className="bg-[#FFFFFF] rounded-2xl border border-[#E8CBA6] shadow-sm p-6 space-y-4">
                         <div>
-                            <h3 className="font-bold text-[#F5E9DC]">Proporsi Kategori</h3>
-                            <p className="text-xs text-[#B8A08C]">Persentase distribusi produk</p>
+                            <h3 className="font-bold text-[#4E3A2C]">Proporsi Kategori</h3>
+                            <p className="text-xs text-[#9A8F81]">Persentase distribusi project</p>
                         </div>
 
                         {loading ? (
-                            <div className="h-64 bg-[#2C1D16] rounded-xl animate-pulse" />
-                        ) : !stats?.categoryStats || stats.categoryStats.length === 0 ? (
-                            <div className="h-64 flex items-center justify-center text-[#B8A08C] text-sm">
+                            <div className="h-64 bg-[#E8CBA6]/30 rounded-xl animate-pulse" />
+                        ) : chartData.length === 0 ? (
+                            <div className="h-64 flex items-center justify-center text-[#9A8F81] text-sm">
                                 Belum ada data.
                             </div>
                         ) : (
@@ -240,21 +247,21 @@ function Dashboard() {
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
                                         <Pie
-                                            data={stats.categoryStats}
-                                            dataKey="product_count"
-                                            nameKey="category_name"
+                                            data={chartData}
+                                            dataKey="value"
+                                            nameKey="name"
                                             cx="50%"
                                             cy="50%"
                                             outerRadius={75}
                                             innerRadius={40}
                                             paddingAngle={4}
                                         >
-                                            {stats.categoryStats.map((entry, index) => (
+                                            {chartData.map((entry, index) => (
                                                 <Cell key={`pie-cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                                             ))}
                                         </Pie>
                                         <Tooltip content={<CustomPieTooltip />} />
-                                        <Legend tick={{ fill: "#B8A08C", fontSize: 11 }} />
+                                        <Legend tick={{ fill: "#4E3A2C", fontSize: 11 }} />
                                     </PieChart>
                                 </ResponsiveContainer>
                             </div>
@@ -262,16 +269,16 @@ function Dashboard() {
                     </div>
                 </div>
 
-                {/* Recent Products */}
-                <div className="bg-[#21150F] rounded-2xl border border-[#3D281C] shadow-md p-6 space-y-4">
+                {/* Recent Projects */}
+                <div className="bg-[#FFFFFF] rounded-2xl border border-[#E8CBA6] shadow-sm p-6 space-y-4">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h3 className="font-bold text-[#F5E9DC]">Produk Terbaru</h3>
-                            <p className="text-xs text-[#B8A08C]">5 produk terakhir yang ditambahkan ke sistem</p>
+                            <h3 className="font-bold text-[#4E3A2C]">Project Terbaru</h3>
+                            <p className="text-xs text-[#9A8F81]">5 project terakhir yang ditambahkan ke sistem</p>
                         </div>
                         <a
                             href="/admin/products"
-                            className="text-xs font-semibold text-[#D19A6A] hover:underline transition-colors"
+                            className="text-xs font-bold text-[#8C6A4A] hover:text-[#4E3A2C] hover:underline transition-colors"
                         >
                             Lihat semua →
                         </a>
@@ -280,37 +287,50 @@ function Dashboard() {
                     {loading ? (
                         <div className="space-y-3">
                             {[...Array(5)].map((_, i) => (
-                                <div key={i} className="h-10 bg-[#2C1D16] rounded-lg animate-pulse" />
+                                <div key={i} className="h-10 bg-[#E8CBA6]/30 rounded-lg animate-pulse" />
                             ))}
                         </div>
                     ) : !stats?.recentProducts || stats.recentProducts.length === 0 ? (
-                        <p className="text-sm text-[#B8A08C] py-8 text-center">Belum ada produk.</p>
+                        <p className="text-sm text-[#9A8F81] py-8 text-center">Belum ada project.</p>
                     ) : (
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
                                 <thead>
-                                    <tr className="bg-[#140D09] text-xs font-semibold text-[#B8A08C] uppercase tracking-wider">
-                                        <th className="px-4 py-3 text-left">Nama Produk</th>
+                                    <tr className="bg-[#FBF7F1] text-xs font-bold text-[#4E3A2C] uppercase tracking-wider border-b border-[#E8CBA6]">
+                                        <th className="px-4 py-3 text-left">Nama Project</th>
                                         <th className="px-4 py-3 text-left">Kategori</th>
-                                        <th className="px-4 py-3 text-left">Harga</th>
+                                        <th className="px-4 py-3 text-left">Estimasi Biaya</th>
                                         <th className="px-4 py-3 text-right">Dibuat</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-[#3D281C]">
+                                <tbody className="divide-y divide-[#E8CBA6]">
                                     {stats.recentProducts.map((prod) => (
-                                        <tr key={prod.id} className="hover:bg-[#2C1D16] transition-colors">
-                                            <td className="px-4 py-3 font-medium text-[#F5E9DC] line-clamp-1">
-                                                {prod.name}
+                                        <tr key={prod.id} className="hover:bg-[#FBF7F1]/60 transition-colors">
+                                            <td className="px-4 py-3 font-semibold text-[#4E3A2C]">
+                                                <div className="flex items-center gap-3">
+                                                    <img
+                                                        src={prod.gambar || "/logo.png"}
+                                                        alt={prod.nama_produk || prod.name || "ARKALOKA Project"}
+                                                        className="w-8 h-8 rounded-lg object-cover bg-[#FBF7F1] border border-[#E8CBA6]"
+                                                        onError={(e) => {
+                                                            e.currentTarget.onerror = null;
+                                                            e.currentTarget.src = "/logo.png";
+                                                        }}
+                                                    />
+                                                    <span className="line-clamp-1">
+                                                        {prod.nama_produk || prod.name || "Project ARKALOKA"}
+                                                    </span>
+                                                </div>
                                             </td>
                                             <td className="px-4 py-3">
-                                                <span className="inline-block bg-[#140D09] border border-[#3D281C] text-[#D19A6A] text-xs font-semibold px-2.5 py-1 rounded-md">
-                                                    {prod.category || "—"}
+                                                <span className="inline-block bg-[#FBF7F1] border border-[#E8CBA6] text-[#8C6A4A] text-xs font-bold px-2.5 py-1 rounded-md">
+                                                    {prod.kategori || prod.category || "—"}
                                                 </span>
                                             </td>
-                                            <td className="px-4 py-3 font-semibold text-[#D19A6A]">
-                                                {formatRupiah(prod.price)}
+                                            <td className="px-4 py-3 font-bold text-[#8C6A4A]">
+                                                {safeFormatRupiah(prod.harga ?? prod.price)}
                                             </td>
-                                            <td className="px-4 py-3 text-right text-xs text-[#B8A08C]">
+                                            <td className="px-4 py-3 text-right text-xs text-[#9A8F81]">
                                                 {formatDate(prod.created_at)}
                                             </td>
                                         </tr>

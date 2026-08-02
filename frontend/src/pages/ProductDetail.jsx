@@ -29,22 +29,22 @@ function ProductDetail() {
                         .catch(() => {});
                 }
             })
-            .catch((err) => setError(err.message || "Produk tidak ditemukan."))
+            .catch((err) => setError(err.message || "Project tidak ditemukan."))
             .finally(() => setLoading(false));
     }, [id]);
 
     if (loading) {
         return (
-            <div className="max-w-6xl mx-auto px-6 py-16 min-h-screen animate-pulse bg-[#140D09]">
-                <div className="bg-[#21150F] rounded-3xl p-8 border border-[#3D281C] grid md:grid-cols-2 gap-12">
-                    <div className="aspect-square bg-[#2C1D16] rounded-2xl" />
+            <div className="max-w-6xl mx-auto px-6 py-16 min-h-screen animate-pulse bg-[#FBF7F1]">
+                <div className="bg-[#FFFFFF] rounded-3xl p-8 border border-[#E8CBA6] grid md:grid-cols-2 gap-12">
+                    <div className="aspect-square bg-[#E8CBA6]/30 rounded-2xl" />
                     <div className="space-y-4">
-                        <div className="h-6 bg-[#2C1D16] rounded w-1/4" />
-                        <div className="h-10 bg-[#2C1D16] rounded w-3/4" />
-                        <div className="h-8 bg-[#2C1D16] rounded w-1/3" />
-                        <div className="h-3 bg-[#2C1D16] rounded" />
-                        <div className="h-3 bg-[#2C1D16] rounded w-5/6" />
-                        <div className="h-14 bg-[#2C1D16] rounded-2xl w-2/3 mt-6" />
+                        <div className="h-6 bg-[#E8CBA6]/30 rounded w-1/4" />
+                        <div className="h-10 bg-[#E8CBA6]/30 rounded w-3/4" />
+                        <div className="h-8 bg-[#E8CBA6]/30 rounded w-1/3" />
+                        <div className="h-3 bg-[#E8CBA6]/30 rounded" />
+                        <div className="h-3 bg-[#E8CBA6]/30 rounded w-5/6" />
+                        <div className="h-14 bg-[#E8CBA6]/30 rounded-2xl w-2/3 mt-6" />
                     </div>
                 </div>
             </div>
@@ -53,51 +53,53 @@ function ProductDetail() {
 
     if (error || !product) {
         return (
-            <div className="max-w-3xl mx-auto px-6 py-20 text-center min-h-screen bg-[#140D09]">
-                <div className="bg-[#21150F] p-12 rounded-3xl border border-[#3D281C] shadow-lg space-y-4">
+            <div className="max-w-3xl mx-auto px-6 py-20 text-center min-h-screen bg-[#FBF7F1]">
+                <div className="bg-[#FFFFFF] p-12 rounded-3xl border border-[#E8CBA6] shadow-sm space-y-4">
                     <span className="text-5xl">⚠️</span>
-                    <h2 className="text-2xl font-bold text-[#F5E9DC]">Produk Tidak Ditemukan</h2>
-                    <p className="text-red-400 text-sm">{error}</p>
+                    <h2 className="text-2xl font-bold text-[#4E3A2C]">Project Tidak Ditemukan</h2>
+                    <p className="text-red-700 text-sm">{error}</p>
                     <Link
                         to="/products"
-                        className="inline-block mt-4 bg-[#B87333] hover:bg-[#A05E22] text-[#F5E9DC] font-semibold px-6 py-2.5 rounded-xl transition-all duration-200"
+                        className="inline-block mt-4 bg-[#8C6A4A] hover:bg-[#4E3A2C] text-[#FBF7F1] font-semibold px-6 py-2.5 rounded-xl transition-all duration-200"
                     >
-                        Kembali ke Katalog
+                        Kembali ke Project Showcase
                     </Link>
                 </div>
             </div>
         );
     }
 
-    const whatsappNumber = "6281234567890";
-    const priceStr = formatRupiah(product.harga);
+    const whatsappNumber = "62895704438010";
+    const priceStr = product.harga ? formatRupiah(product.harga) : "Custom Pricing";
     const whatsappMsg = encodeURIComponent(
-        `Halo, saya tertarik dengan produk ARKALOKA:\n\n*Nama:* ${product.nama_produk}\n*Kategori:* ${product.category}\n*Harga:* ${priceStr}\n\nApakah masih tersedia?`
+        `Halo ARKALOKA, saya ingin konsultasi mengenai project website: ${product.nama_produk}`
     );
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMsg}`;
-    const imageUrl = imgError || !product.gambar
-        ? "https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=800&auto=format&fit=crop&q=60"
-        : product.gambar;
+    const imageUrl = imgError || !product.gambar ? "/logo.png" : product.gambar;
 
     return (
-        <div className="bg-[#140D09] min-h-screen text-[#F5E9DC]">
+        <div className="bg-[#FBF7F1] min-h-screen text-[#4E3A2C]">
 
             {/* ── Main Detail Card ────────────────────────────────────── */}
             <section className="max-w-6xl mx-auto px-6 py-8">
-                <div className="bg-[#21150F] rounded-3xl border border-[#3D281C] shadow-2xl overflow-hidden">
+                <div className="bg-[#FFFFFF] rounded-3xl border border-[#E8CBA6] shadow-lg overflow-hidden">
                     <div className="grid md:grid-cols-2 gap-0">
 
                         {/* Image Column */}
-                        <div className="relative bg-[#140D09] aspect-square overflow-hidden">
+                        <div className="relative bg-[#FBF7F1] aspect-square overflow-hidden">
                             <img
                                 src={imageUrl}
-                                alt={product.nama_produk}
+                                alt={product.nama_produk || "ARKALOKA Project"}
                                 className="w-full h-full object-cover"
-                                onError={() => setImgError(true)}
+                                onError={(e) => {
+                                    e.currentTarget.onerror = null;
+                                    e.currentTarget.src = "/logo.png";
+                                    setImgError(true);
+                                }}
                             />
                             {product.status === "inactive" && (
-                                <span className="absolute top-4 right-4 bg-red-900/90 border border-red-700 text-red-200 text-xs font-bold px-3 py-1.5 rounded-full uppercase shadow-lg">
-                                    Non-aktif
+                                <span className="absolute top-4 right-4 bg-red-800 text-white text-xs font-bold px-3 py-1.5 rounded-full uppercase shadow-lg">
+                                    Selesai / Archived
                                 </span>
                             )}
                         </div>
@@ -109,44 +111,44 @@ function ProductDetail() {
                             <div>
                                 <Link
                                     to={`/categories/${product.category_slug}`}
-                                    className="inline-block text-xs font-bold text-[#D19A6A] uppercase tracking-widest bg-[#140D09] border border-[#3D281C] hover:bg-[#2C1D16] px-3.5 py-1.5 rounded-lg transition-colors"
+                                    className="inline-block text-xs font-bold text-[#4E3A2C] uppercase tracking-widest bg-[#C79E72] hover:bg-[#8C6A4A] hover:text-[#FBF7F1] px-3.5 py-1.5 rounded-lg transition-colors border border-[#E8CBA6]"
                                 >
-                                    {product.category}
+                                    Kategori Layanan: {product.category}
                                 </Link>
-                                <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#F5E9DC] mt-3 leading-tight">
+                                <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#4E3A2C] mt-3 leading-tight">
                                     {product.nama_produk}
                                 </h1>
                             </div>
 
-                            {/* Price */}
-                            <div className="py-4 border-t border-b border-[#3D281C]">
-                                <span className="text-xs text-[#B8A08C] uppercase tracking-wider">Harga</span>
-                                <p className="text-3xl font-black text-[#D19A6A] mt-1">
+                            {/* Estimation Price */}
+                            <div className="py-4 border-t border-b border-[#E8CBA6]">
+                                <span className="text-xs text-[#9A8F81] uppercase tracking-wider font-semibold">Estimasi Biaya</span>
+                                <p className="text-3xl font-black text-[#8C6A4A] mt-1">
                                     {priceStr}
                                 </p>
                             </div>
 
                             {/* Status */}
                             <div className="flex items-center gap-2">
-                                <span className="text-sm text-[#B8A08C]">Status:</span>
+                                <span className="text-sm text-[#9A8F81] font-semibold">Status Ketersediaan:</span>
                                 <span
                                     className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${
                                         product.status === "active"
-                                            ? "bg-emerald-950/80 border border-emerald-800 text-emerald-300"
-                                            : "bg-red-950/80 border border-red-800 text-red-300"
+                                            ? "bg-emerald-50 border border-emerald-200 text-emerald-800"
+                                            : "bg-red-50 border border-red-200 text-red-800"
                                     }`}
                                 >
-                                    {product.status === "active" ? "✓ Tersedia" : "✗ Tidak Tersedia"}
+                                    {product.status === "active" ? "✓ Siap Dikerjakan" : "✗ Kuota Penuh"}
                                 </span>
                             </div>
 
                             {/* Description */}
                             {product.deskripsi && (
                                 <div>
-                                    <h3 className="font-bold text-[#D19A6A] text-xs uppercase tracking-wider mb-2">
-                                        Deskripsi Produk
+                                    <h3 className="font-bold text-[#4E3A2C] text-xs uppercase tracking-wider mb-2">
+                                        Rincian & Deskripsi Project
                                     </h3>
-                                    <p className="text-[#B8A08C] text-sm leading-relaxed whitespace-pre-line">
+                                    <p className="text-[#9A8F81] text-sm leading-relaxed whitespace-pre-line">
                                         {product.deskripsi}
                                     </p>
                                 </div>
@@ -158,16 +160,16 @@ function ProductDetail() {
                                     href={whatsappUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-emerald-700 hover:bg-emerald-600 text-white font-bold rounded-2xl shadow-lg shadow-emerald-950/50 transition-all duration-300 hover:-translate-y-0.5"
+                                    className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-[#8C6A4A] hover:bg-[#4E3A2C] text-[#FBF7F1] font-bold rounded-2xl shadow-md transition-all duration-300 hover:-translate-y-0.5"
                                 >
                                     <span className="text-xl">💬</span>
-                                    <span>Hubungi via WhatsApp</span>
+                                    <span>Hubungi Kami via WhatsApp</span>
                                 </a>
                                 <Link
                                     to="/products"
-                                    className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-[#3D281C] text-[#B8A08C] hover:text-[#F5E9DC] bg-[#140D09] hover:bg-[#2C1D16] font-semibold text-sm rounded-xl transition-colors"
+                                    className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-[#E8CBA6] text-[#4E3A2C] hover:text-[#4E3A2C] bg-[#FBF7F1] hover:bg-[#E8CBA6]/40 font-semibold text-sm rounded-xl transition-colors text-center"
                                 >
-                                    ← Kembali ke Katalog
+                                    ← Kembali ke Project Showcase
                                 </Link>
                             </div>
                         </div>
@@ -175,21 +177,21 @@ function ProductDetail() {
                 </div>
             </section>
 
-            {/* ── Related Products ─────────────────────────────────────── */}
+            {/* ── Related Projects ─────────────────────────────────────── */}
             {related.length > 0 && (
                 <section className="max-w-6xl mx-auto px-6 py-10 pb-20">
                     <div className="flex items-end justify-between mb-6">
                         <div>
-                            <span className="text-[#D19A6A] text-xs font-semibold uppercase tracking-widest">
-                                Kategori {product.category}
+                            <span className="text-[#9A8F81] text-xs font-bold uppercase tracking-widest">
+                                Layanan {product.category}
                             </span>
-                            <h2 className="text-2xl font-extrabold text-[#F5E9DC] mt-1">
-                                Produk Terkait
+                            <h2 className="text-2xl font-extrabold text-[#4E3A2C] mt-1">
+                                Project Terkait
                             </h2>
                         </div>
                         <Link
                             to={`/categories/${product.category_slug}`}
-                            className="text-sm font-bold text-[#D19A6A] hover:text-[#F5E9DC] transition-colors"
+                            className="text-sm font-bold text-[#8C6A4A] hover:text-[#4E3A2C] transition-colors"
                         >
                             Lihat Semua →
                         </Link>

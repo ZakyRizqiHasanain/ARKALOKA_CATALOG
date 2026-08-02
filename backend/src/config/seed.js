@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const pool = require("./database");
 
 async function runSeed() {
-    console.log("Starting database seeding...");
+    console.log("Starting database seeding for ARKALOKA Digital Studio...");
     
     try {
         // 1. Read and execute migration.sql
@@ -30,13 +30,31 @@ async function runSeed() {
         // 3. Seed Categories
         console.log("Seeding categories...");
         const categories = [
-            { nama: "Elektronik", slug: "elektronik", img: "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=600&auto=format&fit=crop&q=60" },
-            { nama: "Fashion", slug: "fashion", img: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&auto=format&fit=crop&q=60" },
-            { nama: "Makanan", slug: "makanan", img: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&auto=format&fit=crop&q=60" },
-            { nama: "Minuman", slug: "minuman", img: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=600&auto=format&fit=crop&q=60" },
-            { nama: "Furniture", slug: "furniture", img: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=600&auto=format&fit=crop&q=60" },
-            { nama: "Aksesoris", slug: "aksesoris", img: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=600&auto=format&fit=crop&q=60" },
-            { nama: "Lainnya", slug: "lainnya", img: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&auto=format&fit=crop&q=60" }
+            {
+                nama: "Web Development",
+                slug: "web-development",
+                img: "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=600&auto=format&fit=crop&q=60"
+            },
+            {
+                nama: "Backend & Database",
+                slug: "backend-database",
+                img: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&auto=format&fit=crop&q=60"
+            },
+            {
+                nama: "Debugging & Testing",
+                slug: "debugging-testing",
+                img: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&auto=format&fit=crop&q=60"
+            },
+            {
+                nama: "Custom Website",
+                slug: "custom-website",
+                img: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&auto=format&fit=crop&q=60"
+            },
+            {
+                nama: "Project Documentation",
+                slug: "project-documentation",
+                img: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&auto=format&fit=crop&q=60"
+            }
         ];
 
         const seededCategories = [];
@@ -52,72 +70,48 @@ async function runSeed() {
         // Helper to get category ID by slug
         const getCatId = (slug) => seededCategories.find(c => c.slug === slug).id;
 
-        // 4. Seed Products
-        console.log("Seeding products...");
+        // 4. Seed Projects
+        console.log("Seeding IT projects...");
         const products = [
             {
-                kategori_id: getCatId("elektronik"),
-                nama_produk: "Laptop ASUS ROG Zephyrus",
-                harga: 18500000,
-                deskripsi: "Laptop gaming super tipis dan bertenaga tinggi dengan prosesor AMD Ryzen 9 dan NVIDIA RTX 4060. Layar 14 inci OLED 120Hz yang sangat jernih.",
-                gambar: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=600&auto=format&fit=crop&q=60",
+                kategori_id: getCatId("custom-website"),
+                nama_produk: "Birthday Website Premium",
+                harga: 500000,
+                deskripsi: "Website ulang tahun dengan desain modern, animasi interaktif, dan tampilan responsive.",
+                gambar: "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=600&auto=format&fit=crop&q=60",
                 status: "active"
             },
             {
-                kategori_id: getCatId("elektronik"),
-                nama_produk: "Smartphone Samsung Galaxy S24 Ultra",
-                harga: 19999000,
-                deskripsi: "Flagship smartphone dengan AI canggih, kamera 200MP, dan layar Dynamic AMOLED 2X 6.8 inci. Dilengkapi S-Pen internal dan frame Titanium.",
-                gambar: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=600&auto=format&fit=crop&q=60",
+                kategori_id: getCatId("web-development"),
+                nama_produk: "Company Profile Website",
+                harga: 1500000,
+                deskripsi: "Website company profile profesional dengan desain elegan dan mudah dikembangkan.",
+                gambar: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&auto=format&fit=crop&q=60",
                 status: "active"
             },
             {
-                kategori_id: getCatId("fashion"),
-                nama_produk: "Jaket Denim Vintage Oversize",
-                harga: 299000,
-                deskripsi: "Jaket denim klasik unisex dengan potongan oversized yang trendy. Terbuat dari bahan jeans tebal berkualitas tinggi yang nyaman dipakai sepanjang hari.",
-                gambar: "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=600&auto=format&fit=crop&q=60",
+                kategori_id: getCatId("backend-database"),
+                nama_produk: "REST API Management System",
+                harga: 2000000,
+                deskripsi: "Backend API menggunakan Node.js Express dengan database PostgreSQL.",
+                gambar: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600&auto=format&fit=crop&q=60",
                 status: "active"
             },
             {
-                kategori_id: getCatId("makanan"),
-                nama_produk: "Nasi Goreng Wagyu Istimewa",
-                harga: 75000,
-                deskripsi: "Nasi goreng bumbu rempah nusantara khas dengan irisan daging sapi wagyu empuk yang berlimpah, telur ceplok setengah matang, dan kerupuk udang.",
-                gambar: "https://images.unsplash.com/photo-1603133872878-6967b6827050?w=600&auto=format&fit=crop&q=60",
+                kategori_id: getCatId("debugging-testing"),
+                nama_produk: "Bug Fix & Optimization Project",
+                harga: 350000,
+                deskripsi: "Perbaikan error program, optimasi fitur, dan testing sistem.",
+                gambar: "https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=600&auto=format&fit=crop&q=60",
                 status: "active"
             },
             {
-                kategori_id: getCatId("minuman"),
-                nama_produk: "Es Kopi Susu Gula Aren 1 Liter",
-                harga: 65000,
-                deskripsi: "Signature blend kopi espresso dengan susu segar creamy dan gula aren murni. Dikemas dalam botol 1 Liter, praktis untuk dinikmati bersama keluarga.",
-                gambar: "https://images.unsplash.com/photo-1541167760496-1628856ab772?w=600&auto=format&fit=crop&q=60",
+                kategori_id: getCatId("project-documentation"),
+                nama_produk: "Student Project Documentation",
+                harga: 250000,
+                deskripsi: "Pembuatan README, laporan project, dan dokumentasi GitHub.",
+                gambar: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&auto=format&fit=crop&q=60",
                 status: "active"
-            },
-            {
-                kategori_id: getCatId("furniture"),
-                nama_produk: "Kursi Kerja Kantor Ergonomis",
-                harga: 1450000,
-                deskripsi: "Kursi kerja dengan penopang lumbar fleksibel, sandaran jala (mesh) anti gerah, armrest 3D yang dapat diatur, dan roda nilon kokoh anti slip.",
-                gambar: "https://images.unsplash.com/photo-1505797149-43b0069ec26b?w=600&auto=format&fit=crop&q=60",
-                status: "active"
-            },
-            {
-                kategori_id: getCatId("aksesoris"),
-                nama_produk: "Kacamata Hitam Aviator Polarized",
-                harga: 185000,
-                deskripsi: "Kacamata polarized pelindung UV400 dengan frame stainless steel tipis dan kuat. Melindungi mata dari silau sinar matahari dengan gaya yang keren.",
-                gambar: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600&auto=format&fit=crop&q=60",
-                status: "active"
-            },
-            {
-                kategori_id: getCatId("lainnya"),
-                nama_produk: "Mug Keramik Custom Premium (Contoh Inactive)",
-                harga: 45000,
-                deskripsi: "Mug keramik premium dengan cetakan sablon anti luntur. Cocok untuk hadiah ulang tahun, souvenir kantor, atau pemakaian pribadi. (Diset tidak aktif).",
-                gambar: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&auto=format&fit=crop&q=60",
-                status: "inactive"
             }
         ];
 
@@ -127,9 +121,9 @@ async function runSeed() {
                 [prod.kategori_id, prod.nama_produk, prod.harga, prod.deskripsi, prod.gambar, prod.status]
             );
         }
-        console.log(`${products.length} products seeded.`);
+        console.log(`${products.length} projects seeded.`);
 
-        console.log("Database seeded successfully.");
+        console.log("Database seeded successfully for ARKALOKA Studio.");
     } catch (err) {
         console.error("Seeding failed:", err);
     } finally {

@@ -14,10 +14,20 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
+const allowedOrigins = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(",")
+    : ["http://localhost:5173", "http://localhost:5174"];
+
 app.use(
     cors({
-        // Izinkan Vite dev server (port 5173 dan 5174 sebagai cadangan)
-        origin: ["http://localhost:5173", "http://localhost:5174"],
+        origin: (origin, callback) => {
+            // Allow requests with no origin (like mobile apps, curl, postman, or server-to-server)
+            if (!origin) return callback(null, true);
+            if (process.env.NODE_ENV === "production" || allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes("*")) {
+                return callback(null, true);
+            }
+            return callback(null, true); // Permissive CORS for smooth deployment
+        },
         credentials: true,
     })
 );
@@ -51,15 +61,19 @@ app.get("/", (req, res) => {
 // Error handling middleware (must be registered last)
 app.use(errorHandler);
 
-// Database Connection
-pool.connect()
-    .then(() => {
-        console.log("Database connected successfully");
-        app.listen(PORT, () => {
-            console.log(`Server running on port ${PORT}`);
-            console.log(`Uploads accessible at: http://localhost:${PORT}/uploads/`);
+// Database Connection & Server Startup
+if (require.main === module) {
+    pool.connect()
+        .then(() => {
+            console.log("Database connected successfully");
+            app.listen(PORT, () => {
+                console.log(`Server running on port ${PORT}`);
+                console.log(`Uploads accessible at: http://localhost:${PORT}/uploads/`);
+            });
+        })
+        .catch((err) => {
+            console.error("Database connection failed:", err);
         });
-    })
-    .catch((err) => {
-        console.error("Database connection failed:", err);
-    });
+}
+
+module.exports = app;

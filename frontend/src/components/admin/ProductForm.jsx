@@ -7,18 +7,18 @@ function ProductForm({ initialData = null, onSubmit, onCancel, isLoading = false
     const fileInputRef = useRef(null);
 
     const [form, setForm] = useState({
-        name: initialData?.name || "",
-        price: initialData?.price || "",
-        description: initialData?.description || "",
-        image: initialData?.image || "",
-        category_id: initialData?.category_id || "",
+        name: initialData?.name || initialData?.nama_produk || "",
+        price: initialData?.price ?? initialData?.harga ?? "",
+        description: initialData?.description || initialData?.deskripsi || "",
+        image: initialData?.image || initialData?.gambar || "",
+        category_id: initialData?.category_id || initialData?.kategori_id || "",
         status: initialData?.status || "active",
     });
 
     const [errors, setErrors] = useState({});
     const [categories, setCategories] = useState([]);
     const [loadingCats, setLoadingCats] = useState(true);
-    const [imagePreview, setImagePreview] = useState(initialData?.image || "");
+    const [imagePreview, setImagePreview] = useState(initialData?.image || initialData?.gambar || "/logo.png");
     const [uploadingImage, setUploadingImage] = useState(false);
     const [uploadError, setUploadError] = useState("");
 
@@ -32,7 +32,7 @@ function ProductForm({ initialData = null, onSubmit, onCancel, isLoading = false
     const handleChange = (e) => {
         const { name, value } = e.target;
         setForm((prev) => ({ ...prev, [name]: value }));
-        if (name === "image") setImagePreview(value);
+        if (name === "image") setImagePreview(value || "/logo.png");
         if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
     };
 
@@ -51,7 +51,7 @@ function ProductForm({ initialData = null, onSubmit, onCancel, isLoading = false
             setImagePreview(result.url);
         } catch (err) {
             setUploadError(err.message || "Gagal upload gambar");
-            setImagePreview(form.image);
+            setImagePreview(form.image || "/logo.png");
         } finally {
             setUploadingImage(false);
         }
@@ -59,9 +59,9 @@ function ProductForm({ initialData = null, onSubmit, onCancel, isLoading = false
 
     const validate = () => {
         const e = {};
-        if (!form.name.trim()) e.name = "Nama produk wajib diisi.";
+        if (!form.name.trim()) e.name = "Nama project wajib diisi.";
         if (form.price === "" || isNaN(form.price) || parseFloat(form.price) < 0)
-            e.price = "Harga harus angka dan tidak boleh negatif.";
+            e.price = "Estimasi harga harus angka dan tidak boleh negatif.";
         if (!form.category_id) e.category_id = "Kategori wajib dipilih.";
         return e;
     };
@@ -74,33 +74,33 @@ function ProductForm({ initialData = null, onSubmit, onCancel, isLoading = false
     };
 
     const inputCls = (field) =>
-        `w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#B87333] transition-all bg-[#140D09] text-[#F5E9DC] placeholder-[#B8A08C]/50 ${
-            errors[field] ? "border-red-500 bg-red-950/20" : "border-[#3D281C]"
+        `w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#8C6A4A] transition-all bg-[#FBF7F1] text-[#4E3A2C] placeholder-[#9A8F81]/60 ${
+            errors[field] ? "border-red-500 bg-red-50" : "border-[#E8CBA6]"
         }`;
 
     return (
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5 text-[#F5E9DC]">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5 text-[#4E3A2C]">
 
-            {/* Nama Produk */}
+            {/* Nama Project */}
             <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-[#B8A08C] mb-1">
-                    Nama Produk <span className="text-red-400">*</span>
+                <label className="block text-sm font-bold text-[#4E3A2C] mb-1">
+                    Nama Project <span className="text-red-500">*</span>
                 </label>
                 <input
                     type="text"
                     name="name"
                     value={form.name}
                     onChange={handleChange}
-                    placeholder="Contoh: Kemeja Linen Premium ARKALOKA"
+                    placeholder="Contoh: Birthday Website Premium"
                     className={inputCls("name")}
                 />
-                {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
+                {errors.name && <p className="text-red-600 text-xs mt-1 font-semibold">{errors.name}</p>}
             </div>
 
-            {/* Harga */}
+            {/* Estimasi Harga */}
             <div>
-                <label className="block text-sm font-semibold text-[#B8A08C] mb-1">
-                    Harga (Rp) <span className="text-red-400">*</span>
+                <label className="block text-sm font-bold text-[#4E3A2C] mb-1">
+                    Estimasi Biaya / Harga (Rp) <span className="text-red-500">*</span>
                 </label>
                 <input
                     type="number"
@@ -111,16 +111,16 @@ function ProductForm({ initialData = null, onSubmit, onCancel, isLoading = false
                     min="0"
                     className={inputCls("price")}
                 />
-                {errors.price && <p className="text-red-400 text-xs mt-1">{errors.price}</p>}
+                {errors.price && <p className="text-red-600 text-xs mt-1 font-semibold">{errors.price}</p>}
             </div>
 
             {/* Kategori */}
             <div>
-                <label className="block text-sm font-semibold text-[#B8A08C] mb-1">
-                    Kategori <span className="text-red-400">*</span>
+                <label className="block text-sm font-bold text-[#4E3A2C] mb-1">
+                    Kategori Layanan <span className="text-red-500">*</span>
                 </label>
                 {loadingCats ? (
-                    <div className="h-10 bg-[#2C1D16] rounded-xl animate-pulse" />
+                    <div className="h-10 bg-[#E8CBA6]/30 rounded-xl animate-pulse" />
                 ) : (
                     <select
                         name="category_id"
@@ -136,44 +136,44 @@ function ProductForm({ initialData = null, onSubmit, onCancel, isLoading = false
                         ))}
                     </select>
                 )}
-                {errors.category_id && <p className="text-red-400 text-xs mt-1">{errors.category_id}</p>}
+                {errors.category_id && <p className="text-red-600 text-xs mt-1 font-semibold">{errors.category_id}</p>}
             </div>
 
             {/* Status */}
             <div>
-                <label className="block text-sm font-semibold text-[#B8A08C] mb-1">Status</label>
+                <label className="block text-sm font-bold text-[#4E3A2C] mb-1">Status Ketersediaan</label>
                 <select
                     name="status"
                     value={form.status}
                     onChange={handleChange}
                     className={inputCls("status")}
                 >
-                    <option value="active">Aktif</option>
-                    <option value="inactive">Non-aktif</option>
+                    <option value="active">Aktif (Siap Dikerjakan)</option>
+                    <option value="inactive">Non-aktif (Finished / Archived)</option>
                 </select>
             </div>
 
             {/* Gambar */}
             <div>
-                <label className="block text-sm font-semibold text-[#B8A08C] mb-1">Gambar</label>
+                <label className="block text-sm font-bold text-[#4E3A2C] mb-1">URL Gambar Project</label>
                 <input
                     type="url"
                     name="image"
                     value={form.image}
                     onChange={handleChange}
-                    placeholder="https://example.com/image.jpg"
-                    className="w-full border border-[#3D281C] bg-[#140D09] text-[#F5E9DC] placeholder-[#B8A08C]/50 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#B87333] mb-2"
+                    placeholder="https://example.com/project.jpg"
+                    className="w-full border border-[#E8CBA6] bg-[#FBF7F1] text-[#4E3A2C] placeholder-[#9A8F81]/60 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#8C6A4A] mb-2"
                 />
                 <div className="flex items-center gap-2">
                     <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
                         disabled={uploadingImage}
-                        className="text-xs px-3 py-1.5 bg-[#2C1D16] border border-[#3D281C] hover:bg-[#3D281C] text-[#F5E9DC] rounded-lg transition-colors disabled:opacity-50"
+                        className="text-xs px-3 py-1.5 bg-[#8C6A4A] hover:bg-[#4E3A2C] text-[#FBF7F1] font-bold rounded-lg transition-colors disabled:opacity-50"
                     >
                         {uploadingImage ? "Mengupload..." : "📁 Upload File"}
                     </button>
-                    <span className="text-xs text-[#B8A08C]">atau paste URL di atas</span>
+                    <span className="text-xs text-[#9A8F81] font-medium">atau paste URL gambar</span>
                 </div>
                 <input
                     ref={fileInputRef}
@@ -182,43 +182,40 @@ function ProductForm({ initialData = null, onSubmit, onCancel, isLoading = false
                     onChange={handleFileChange}
                     className="hidden"
                 />
-                {uploadError && <p className="text-red-400 text-xs mt-1">{uploadError}</p>}
+                {uploadError && <p className="text-red-600 text-xs mt-1 font-semibold">{uploadError}</p>}
             </div>
 
             {/* Preview Gambar */}
             <div>
-                <label className="block text-sm font-semibold text-[#B8A08C] mb-1">Preview</label>
-                {imagePreview ? (
-                    <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-[#140D09] border border-[#3D281C]">
-                        <img
-                            src={imagePreview}
-                            alt="Preview"
-                            className="w-full h-full object-cover"
-                            onError={(e) => { e.target.src = ""; setImagePreview(""); }}
-                        />
-                        {uploadingImage && (
-                            <div className="absolute inset-0 bg-[#140D09]/80 flex items-center justify-center">
-                                <span className="text-xs text-[#D19A6A] animate-pulse">Mengupload...</span>
-                            </div>
-                        )}
-                    </div>
-                ) : (
-                    <div className="w-full aspect-video rounded-xl bg-[#140D09] border border-dashed border-[#3D281C] flex items-center justify-center text-[#B8A08C] text-xs">
-                        Belum ada gambar
-                    </div>
-                )}
+                <label className="block text-sm font-bold text-[#4E3A2C] mb-1">Preview Gambar</label>
+                <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-[#FBF7F1] border border-[#E8CBA6]">
+                    <img
+                        src={imagePreview || "/logo.png"}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = "/logo.png";
+                        }}
+                    />
+                    {uploadingImage && (
+                        <div className="absolute inset-0 bg-[#FBF7F1]/80 flex items-center justify-center">
+                            <span className="text-xs text-[#8C6A4A] font-bold animate-pulse">Mengupload...</span>
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* Deskripsi */}
             <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-[#B8A08C] mb-1">Deskripsi</label>
+                <label className="block text-sm font-bold text-[#4E3A2C] mb-1">Rincian & Deskripsi Project</label>
                 <textarea
                     name="description"
                     value={form.description}
                     onChange={handleChange}
-                    placeholder="Tuliskan deskripsi produk secara lengkap..."
+                    placeholder="Tuliskan deskripsi rincian project secara lengkap..."
                     rows={4}
-                    className="w-full border border-[#3D281C] bg-[#140D09] text-[#F5E9DC] placeholder-[#B8A08C]/50 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#B87333] resize-none"
+                    className="w-full border border-[#E8CBA6] bg-[#FBF7F1] text-[#4E3A2C] placeholder-[#9A8F81]/60 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#8C6A4A] resize-none"
                 />
             </div>
 
@@ -227,15 +224,15 @@ function ProductForm({ initialData = null, onSubmit, onCancel, isLoading = false
                 <button
                     type="submit"
                     disabled={isLoading || uploadingImage}
-                    className="px-6 py-2.5 bg-[#B87333] hover:bg-[#A05E22] disabled:opacity-50 text-[#F5E9DC] font-semibold text-sm rounded-xl transition-colors shadow-md"
+                    className="px-6 py-2.5 bg-[#8C6A4A] hover:bg-[#4E3A2C] disabled:opacity-50 text-[#FBF7F1] font-bold text-sm rounded-xl transition-colors shadow-sm"
                 >
-                    {isLoading ? "Menyimpan..." : isEdit ? "Simpan Perubahan" : "Tambah Produk"}
+                    {isLoading ? "Menyimpan..." : isEdit ? "Simpan Perubahan" : "Tambah Project"}
                 </button>
                 <button
                     type="button"
                     onClick={onCancel}
                     disabled={isLoading}
-                    className="px-6 py-2.5 bg-[#2C1D16] border border-[#3D281C] hover:bg-[#3D281C] text-[#B8A08C] hover:text-[#F5E9DC] font-semibold text-sm rounded-xl transition-colors"
+                    className="px-6 py-2.5 bg-[#FBF7F1] border border-[#E8CBA6] hover:bg-[#E8CBA6]/40 text-[#4E3A2C] hover:text-[#4E3A2C] font-bold text-sm rounded-xl transition-colors"
                 >
                     Batal
                 </button>
